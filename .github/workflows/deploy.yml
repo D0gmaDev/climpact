@@ -1,0 +1,47 @@
+# Name of the GitHub Actions workflow.
+name: Deploy to SFTP Server
+
+# This workflow runs automatically on every push to the 'main' branch.
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    # Use the latest version of Ubuntu as the runner environment.
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Create and configure config.php
+        run: |
+          cp config.template.php config.php
+          sed -i 's/%%DB_PASSWORD%%/${{ secrets.DB_PASSWORD }}/g' config.php
+        shell: bash
+
+      - name: rsync deployments
+        uses: burnett01/rsync-deployments@7.0.2
+        with:
+          switches: -avzr --delete
+          remote_path: /home/projets/climpact23/writable/
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_port: 8888
+          remote_user: ${{ secrets.SSH_USER }}
+          remote_key: ${{ secrets.SSH_KEY }}
+          # (Optional) Add host key checking for security.
+          # You'll need to get your server's host key first (e.g., ssh-keyscan your.server.com)
+          # known_hosts: ${{ secrets.KNOWN_HOSTS }} 
+
+
+      - name: Set permissions on remote server
+        # Using appleboy/ssh-action for cleaner remote command execution
+        uses: appleboy/ssh-action@v1.0.3 # Use the latest stable version
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: 8888
+          script: chown -R climpact23:projet /home/projets/climpact23/writable
