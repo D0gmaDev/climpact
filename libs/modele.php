@@ -6,7 +6,7 @@ include_once("libs/maLibSQL.pdo.php");
 
 function getUserById($idUser)
 {
-	$SQL = "SELECT * FROM users WHERE id='$idUser'";
+	$SQL = "SELECT id, username, first_name AS firstName, last_name AS lastName, email, role, cursus, picture, theme FROM users WHERE id='$idUser'";
 	$listUsers = parcoursRs(SQLSelect($SQL));
 
 	if (count($listUsers) == 0)
@@ -17,7 +17,7 @@ function getUserById($idUser)
 
 function getUserByUsername($username)
 {
-	$SQL = "SELECT * FROM users WHERE username='$username'";
+	$SQL = "SELECT id, username, first_name AS firstName, last_name AS lastName, email, role, cursus, picture, theme FROM users WHERE username='$username'";
 	$listUsers = parcoursRs(SQLSelect($SQL));
 
 	if (count($listUsers) == 0)
@@ -28,7 +28,7 @@ function getUserByUsername($username)
 
 function getUsers($search = "")
 {
-	$SQL = "SELECT id, username, first_name, last_name, email, role, cursus FROM users";
+	$SQL = "SELECT id, username, first_name AS firstName, last_name AS lastName, email, role, cursus, picture, theme FROM users";
 
 	if ($search != "") {
 		$SQL .= " WHERE username LIKE '%$search%'";
