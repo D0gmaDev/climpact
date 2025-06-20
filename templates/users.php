@@ -18,6 +18,6 @@ include_once("libs/maLibForms.php"); // mkTable, mkSelect
 <?php
 
 $users = getUsers();
-mkTable($users, array("id", "username", "first_name", "last_name", "cursus"));
+mkTable($users, array("id", "username", "firstName", "lastName", "cursus"));
 
 ?>

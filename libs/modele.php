@@ -74,18 +74,28 @@ function updateCursus($idUser, $cursus)
 	return SQLUpdate($SQL);
 }
 
+function updatePicture($idUser, $picture)
+{
+	if (empty($picture)) {
+		$SQL = "UPDATE users SET picture=NULL WHERE id='$idUser'";
+		return SQLUpdate($SQL);
+	} else {
+		$SQL = "UPDATE users SET picture='$picture' WHERE id='$idUser'";
+		return SQLUpdate($SQL);
+	}
+}
+
 // ---- Evénements ---- //
 
-function insertEvent($title, $content, $startTime, $endTime, $location, $image, $association, $author, $organizers)
+function insertEvent($title, $content, $startTime, $endTime, $location, $image, $association, $author, $organizerIds)
 {
 	$SQL = "INSERT INTO events(title, content, start_time, end_time, location, image, association, author) 
 			VALUES('$title', '$content', '$startTime', '$endTime', '$location', '$image', '$association', '$author')";
 	$idEvent = SQLInsert($SQL);
 
-	if ($idEvent && is_array($organizers)) {
-		foreach ($organizers as $organizer) {
-			$SQL = "INSERT INTO involvements(event, user, type) VALUES($idEvent, '$organizer', 'orga')";
-			SQLInsert($SQL);
+	if ($idEvent && is_array($organizerIds)) {
+		foreach ($organizerIds as $organizer) {
+			insertInvolvement($organizer, $idEvent, "orga");
 		}
 	}
 	return $idEvent;
@@ -98,7 +108,7 @@ function getEvents($limit = 10, $whereClause = "")
 			GROUP_CONCAT(DISTINCT CASE WHEN i.type = 'orga' THEN i.user END) AS orgnizers,
             GROUP_CONCAT(DISTINCT CASE WHEN i.type = 'participate' THEN i.user END) AS participants,
             GROUP_CONCAT(DISTINCT CASE WHEN i.type = 'interested' THEN i.user END) AS interested,
-            GROUP_CONCAT(DISTINCT et.tag) AS tag_ids
+            GROUP_CONCAT(DISTINCT et.tag) AS tagIds
         FROM events e
         LEFT JOIN involvements i ON e.id = i.event
         LEFT JOIN event_tags et ON e.id = et.event
@@ -114,7 +124,7 @@ function getEvents($limit = 10, $whereClause = "")
 		$event['orgnizers'] = explode(',', $event['orgnizers']);
 		$event['participants'] = explode(',', $event['participants']);
 		$event['interested'] = explode(',', $event['interested']);
-		$event['tag_ids'] = explode(',', $event['tag_ids']);
+		$event['tagIds'] = explode(',', $event['tagIds']);
 	}
 	return $result;
 }
@@ -189,10 +199,29 @@ function getTag($id)
 
 // ---- Involvements ---- //
 
+function insertInvolvement($idUser, $idEvent, $type = "participate")
+{
+	$SQL = "INSERT INTO involvements(user, event, type) VALUES('$idUser', '$idEvent', '$type')";
+	return SQLInsert($SQL);
+}
+
+function deleteInvolvement($idUser, $idEvent, $type = "participate")
+{
+	$SQL = "DELETE FROM involvements WHERE user = '$idUser' AND event = '$idEvent' AND type = '$type'";
+	return SQLDelete($SQL);
+}
+
 function getUserEventInvolvementIds($idUser, $type = "participate")
 {
 	$SQL = "SELECT event FROM involvements WHERE user = '$idUser' AND type = '$type'";
 	return parcoursRs(SQLSelect($SQL));
+}
+
+function isUserInvolvedInEvent($idUser, $idEvent, $type = "participate")
+{
+	$SQL = "SELECT COUNT(*) FROM involvements WHERE user = '$idUser' AND event = '$idEvent' AND type = '$type'";
+	$count = SQLGetChamp($SQL);
+	return $count > 0;
 }
 
 function getBadgeByName($name)
@@ -208,9 +237,9 @@ function getUserInvolvementData($idUser)
 
 	$SQL = "SELECT
 		u.id,
-		COUNT(DISTINCT CASE WHEN i.type = 'participate' THEN i.event END) AS participate,
+		COUNT(DISTINCT CASE WHEN i.type = 'participate' THEN i.event END) AS participated,
 		COUNT(DISTINCT CASE WHEN i.type = 'interested' THEN i.event END) AS interested,
-		COUNT(DISTINCT CASE WHEN i.type = 'orga' THEN i.event END) AS orga
+		COUNT(DISTINCT CASE WHEN i.type = 'orga' THEN i.event END) AS organized
 	FROM users u
 	LEFT JOIN involvements i ON i.user = u.id
 	LEFT JOIN events e ON e.author = u.id
@@ -245,9 +274,9 @@ function getUserBadges($idUser)
 	if (!$involvementData)
 		return $badges;
 
-	$participate = intval($involvementData["participate"]);
+	$participated = intval($involvementData["participated"]);
 	$interested = intval($involvementData["interested"]);
-	$orga = intval($involvementData["orga"]);
+	$organized = intval($involvementData["organized"]);
 
 	if ($interested >= 3) {
 		$badge = getBadgeByName("curious"); // 🧩 Curieux.se
@@ -255,33 +284,33 @@ function getUserBadges($idUser)
 			$badges[] = $badge;
 	}
 
-	if ($participate >= 3) {
+	if ($participated >= 3) {
 		$badge = getBadgeByName("active"); // 💬 Actif.ve
 		if ($badge)
 			$badges[] = $badge;
 	}
-	if ($participate >= 10) {
+	if ($participated >= 10) {
 		$badge = getBadgeByName("super_participant"); // 💥 Super participant.e
 		if ($badge)
 			$badges[] = $badge;
 	}
-	if ($participate >= 20) {
+	if ($participated >= 20) {
 		$badge = getBadgeByName("gold"); // 💎 Engagé.e d’Or
 		if ($badge)
 			$badges[] = $badge;
 	}
 
-	if ($orga >= 1) {
+	if ($organized >= 1) {
 		$badge = getBadgeByName("organizer"); // 🛠️ Organisateur.rice
 		if ($badge)
 			$badges[] = $badge;
 	}
-	if ($orga >= 5) {
+	if ($organized >= 5) {
 		$badge = getBadgeByName("ambassador"); // 🌱 Ambassadeur.rice
 		if ($badge)
 			$badges[] = $badge;
 	}
-	if ($orga >= 10) {
+	if ($organized >= 10) {
 		$badge = getBadgeByName("leader"); // 🧠 Leader d’impact
 		if ($badge)
 			$badges[] = $badge;
