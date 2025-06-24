@@ -31,6 +31,7 @@ function getUsers($search = "")
 	$SQL = "SELECT id, username, first_name AS firstName, last_name AS lastName, email, role, cursus, picture, theme FROM users";
 
 	if ($search != "") {
+		$search = htmlspecialchars($search);
 		$SQL .= " WHERE username LIKE '%$search%'";
 	}
 
@@ -190,11 +191,22 @@ function getUserAssociations($idUser)
 	return parcoursRs(SQLSelect($SQL));
 }
 
-function getTag($id)
+function getTagById($id)
 {
 	$SQL = "SELECT * FROM tags WHERE id = " . intval($id);
 	$results = parcoursRs(SQLSelect($SQL));
 	return count($results) > 0 ? $results[0] : null;
+}
+
+function getTags($search = "")
+{
+ $SQL = "SELECT * FROM tags";
+
+ if ($search != "") {
+  $SQL .= " WHERE name LIKE '%$search%'";
+ }
+
+ return parcoursRs(SQLSelect($SQL));
 }
 
 // ---- Involvements ---- //
