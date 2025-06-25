@@ -65,7 +65,7 @@ if ($action = valider("action")) {
 			$startDateTime = "$start_date $start_time:00";
 			$endDateTime = "$end_date $end_time:00";
 
-			$newEventId = insertEvent($title, $content, $startDateTime, $endDateTime, $lieu, $image_url, $association_id, $idUser, $organizers);
+			$newEventId = insertEvent($title, $content, $startDateTime, $endDateTime, $lieu, $image_url, $association_id, $idUser, $organizers, $tags);
 
 			if ($newEventId) {
 				$qs = "?view=event&id=" . $newEventId;

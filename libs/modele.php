@@ -88,7 +88,7 @@ function updatePicture($idUser, $picture)
 
 // ---- Evénements ---- //
 
-function insertEvent($title, $content, $startTime, $endTime, $location, $image, $association, $author, $organizerIds)
+function insertEvent($title, $content, $startTime, $endTime, $location, $image, $association, $author, $organizerIds, $tagsIds)
 {
 	$SQL = "INSERT INTO events(title, content, start_time, end_time, location, image, association, author) 
 			VALUES('$title', '$content', '$startTime', '$endTime', '$location', '$image', '$association', '$author')";
@@ -99,6 +99,14 @@ function insertEvent($title, $content, $startTime, $endTime, $location, $image, 
 			insertInvolvement($organizer, $idEvent, "orga");
 		}
 	}
+
+	if($idEvent && is_array($tagsIds)) {
+		foreach ($tagsIds as $tagId) {
+			$SQL = "INSERT INTO event_tags(event, tag) VALUES('$idEvent', '$tagId')";
+			SQLInsert($SQL);
+		}
+	}
+
 	return $idEvent;
 }
 
@@ -106,7 +114,7 @@ function getEvents($limit = 10, $whereClause = "")
 {
 	$SQL = "SELECT 
             e.*,
-			GROUP_CONCAT(DISTINCT CASE WHEN i.type = 'orga' THEN i.user END) AS orgnizers,
+			GROUP_CONCAT(DISTINCT CASE WHEN i.type = 'orga' THEN i.user END) AS organizers,
             GROUP_CONCAT(DISTINCT CASE WHEN i.type = 'participate' THEN i.user END) AS participants,
             GROUP_CONCAT(DISTINCT CASE WHEN i.type = 'interested' THEN i.user END) AS interested,
             GROUP_CONCAT(DISTINCT et.tag) AS tagIds
@@ -122,10 +130,10 @@ function getEvents($limit = 10, $whereClause = "")
 	$result = parcoursRs(SQLSelect($SQL));
 
 	foreach ($result as &$event) {
-		$event['orgnizers'] = explode(',', $event['orgnizers']);
-		$event['participants'] = explode(',', $event['participants']);
-		$event['interested'] = explode(',', $event['interested']);
-		$event['tagIds'] = explode(',', $event['tagIds']);
+		$event['orgnizers'] = $event['orgnizers'] ? explode(',', $event['orgnizers']) : [];
+		$event['participants'] = $event['participants'] ? explode(',', $event['participants']) : [];
+		$event['interested'] = $event['interested'] ? explode(',', $event['interested']) : [];
+		$event['tagIds'] = $event['tagIds'] ? explode(',', $event['tagIds']) : [];
 	}
 	return $result;
 }
@@ -200,13 +208,13 @@ function getTagById($id)
 
 function getTags($search = "")
 {
- $SQL = "SELECT * FROM tags";
+	$SQL = "SELECT * FROM tags";
 
- if ($search != "") {
-  $SQL .= " WHERE name LIKE '%$search%'";
- }
+	if ($search != "") {
+		$SQL .= " WHERE name LIKE '%$search%'";
+	}
 
- return parcoursRs(SQLSelect($SQL));
+	return parcoursRs(SQLSelect($SQL));
 }
 
 // ---- Involvements ---- //
