@@ -40,223 +40,258 @@ function getUsers($search = "")
 
 function insertUser($username, $firstName, $lastName, $email, $cursus)
 {
-	$token_hash = sha1(rand()); // Génère un hash simple pour le token (à améliorer en production)
-	$SQL = "INSERT INTO users (username, first_name, last_name, email, token_hash, role, cursus) VALUES ('$username', '$firstName', '$lastName', '$email', '$token_hash', 'user', '$cursus')";
+
+	$hash = generateToken($username);
+	$cursus = str_replace("'", "''", $cursus);
+
+
+	$SQL = "INSERT INTO users(username, first_name, last_name, email, token_hash, role, cursus)";
+	$SQL .= " VALUES('$username', '$firstName', '$lastName', '$email', '$hash', 'student', '$cursus')";
+
 	return SQLInsert($SQL);
 }
 
-function updateUser($idUser, $firstName, $lastName, $email, $cursus, $picture = NULL, $theme = NULL)
+
+function generateToken($username)
 {
-	$SQL = "UPDATE users SET first_name='$firstName', last_name='$lastName', email='$email', cursus='$cursus'";
-	if ($picture !== NULL) {
-		$SQL .= ", picture='$picture'";
-	}
-	if ($theme !== NULL) {
-		$SQL .= ", theme='$theme'";
-	}
-	$SQL .= " WHERE id='$idUser'";
+	$payload = $username . date("H:i:s");
+	$hash = md5($payload);
+	return $hash;
+}
+
+function getTokenById($idUser)
+{
+	$SQL = "SELECT token_hash FROM users WHERE id='$idUser'";
+	return SQLGetChamp($SQL);
+}
+
+function isAdminById($idUser)
+{
+	$SQL = "SELECT role FROM users WHERE id='$idUser'";
+	return SQLGetChamp($SQL) == "admin";
+}
+
+function updateCursus($idUser, $cursus)
+{
+	$SQL = "UPDATE users SET cursus='$cursus' WHERE id='$idUser'";
 	return SQLUpdate($SQL);
 }
 
-// ---- Associations ---- //
-
-function getAssociations($nb = 0)
+function updatePicture($idUser, $picture)
 {
-	$SQL = "SELECT id, name, description, website, admin FROM associations";
-	if ($nb > 0) {
-		$SQL .= " LIMIT $nb";
+	if (empty($picture)) {
+		$SQL = "UPDATE users SET picture=NULL WHERE id='$idUser'";
+		return SQLUpdate($SQL);
+	} else {
+		$SQL = "UPDATE users SET picture='$picture' WHERE id='$idUser'";
+		return SQLUpdate($SQL);
 	}
-	return parcoursRs(SQLSelect($SQL));
 }
 
-function getAssociationById($id)
+// ---- Evénements ---- //
+
+function insertEvent($title, $content, $startTime, $endTime, $location, $image, $association, $author, $organizerIds, $tagsIds)
 {
-	$SQL = "SELECT id, name, description, website, admin FROM associations WHERE id='$id'";
-	$listAssos = parcoursRs(SQLSelect($SQL));
-	return count($listAssos) > 0 ? $listAssos[0] : false;
+	$SQL = "INSERT INTO events(title, content, start_time, end_time, location, image, association, author) 
+			VALUES('$title', '$content', '$startTime', '$endTime', '$location', '$image', '$association', '$author')";
+	$idEvent = SQLInsert($SQL);
+
+	if ($idEvent && is_array($organizerIds)) {
+		foreach ($organizerIds as $organizer) {
+			insertInvolvement($organizer, $idEvent, "orga");
+		}
+	}
+
+	if($idEvent && is_array($tagsIds)) {
+		foreach ($tagsIds as $tagId) {
+			$SQL = "INSERT INTO event_tags(event, tag) VALUES('$idEvent', '$tagId')";
+			SQLInsert($SQL);
+		}
+	}
+
+	return $idEvent;
 }
 
-function getUserAssociations($idUser)
+function getEvents($limit = 10, $whereClause = "")
 {
-	// Cette fonction suppose une table de liaison ou un champ dans `associations` pour l'admin
-	$SQL = "SELECT id, name FROM associations WHERE admin='$idUser'";
-	return parcoursRs(SQLSelect($SQL));
-}
-
-// ---- Badges ---- //
-
-function getBadges()
-{
-	$SQL = "SELECT id, name, display_name AS displayName, description, emoji FROM badges ORDER BY id ASC";
-	return parcoursRs(SQLSelect($SQL));
-}
-
-function getBadgeByName($name)
-{
-	$SQL = "SELECT id, name, display_name AS displayName, description, emoji FROM badges WHERE name='$name'";
-	$listBadges = parcoursRs(SQLSelect($SQL));
-	return count($listBadges) > 0 ? $listBadges[0] : false;
-}
-
-// ---- Événements ---- //
-
-function getEvents($nb = 0, $activeOnly = true, $tagIds = [], $associationIds = [])
-{
-	$SQL = "SELECT E.*,
-            GROUP_CONCAT(DISTINCT T.name ORDER BY T.name SEPARATOR ',') AS tagNames,
-            GROUP_CONCAT(DISTINCT ET.tag ORDER BY ET.tag SEPARATOR ',') AS tagIds,
-            GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'orga' THEN U.username END) AS organizers,
-            GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'participant' THEN U.username END) AS participants,
-            GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'interested' THEN U.username END) AS interested
-            FROM events E
-            LEFT JOIN event_tags ET ON E.id = ET.event
-            LEFT JOIN tags T ON ET.tag = T.id
-            LEFT JOIN involvements I ON E.id = I.event
-            LEFT JOIN users U ON I.user = U.id";
-
-	$conditions = [];
-
-	if ($activeOnly) {
-		$conditions[] = "E.end_time >= NOW()";
-	}
-
-	// Filter by tag IDs
-	if (!empty($tagIds)) {
-		// Ensure tagIds are integers for security
-		$tagIds = array_map('intval', $tagIds);
-		// Utilise IN pour filtrer par les tags sélectionnés
-		$conditions[] = "E.id IN (SELECT event FROM event_tags WHERE tag IN (" . implode(',', $tagIds) . "))";
-	}
-
-	// Filter by association IDs
-	if (!empty($associationIds)) {
-		// Ensure associationIds are integers for security
-		$associationIds = array_map('intval', $associationIds);
-		$conditions[] = "E.association IN (" . implode(',', $associationIds) . ")";
-	}
-
-	if (!empty($conditions)) {
-		$SQL .= " WHERE " . implode(' AND ', $conditions);
-	}
-
-	$SQL .= " GROUP BY E.id";
-	$SQL .= " ORDER BY E.start_time ASC";
-
-	if ($nb > 0) {
-		$SQL .= " LIMIT $nb";
-	}
+	$SQL = "SELECT 
+            e.*,
+			GROUP_CONCAT(DISTINCT CASE WHEN i.type = 'orga' THEN i.user END) AS organizers,
+            GROUP_CONCAT(DISTINCT CASE WHEN i.type = 'participate' THEN i.user END) AS participants,
+            GROUP_CONCAT(DISTINCT CASE WHEN i.type = 'interested' THEN i.user END) AS interested,
+            GROUP_CONCAT(DISTINCT et.tag) AS tagIds
+        FROM events e
+        LEFT JOIN involvements i ON e.id = i.event
+        LEFT JOIN event_tags et ON e.id = et.event
+        $whereClause
+        GROUP BY e.id
+        ORDER BY e.start_time
+        LIMIT $limit
+    ";
 
 	$result = parcoursRs(SQLSelect($SQL));
 
 	foreach ($result as &$event) {
-		// Assurez-vous que les clés existent avant d'appeler explode
-		$event['organizers'] = isset($event['organizers']) && $event['organizers'] ? explode(',', $event['organizers']) : [];
-		$event['participants'] = isset($event['participants']) && $event['participants'] ? explode(',', $event['participants']) : [];
-		$event['interested'] = isset($event['interested']) && $event['interested'] ? explode(',', $event['interested']) : [];
-		$event['tagIds'] = isset($event['tagIds']) && $event['tagIds'] ? explode(',', $event['tagIds']) : [];
-		$event['tagNames'] = isset($event['tagNames']) && $event['tagNames'] ? explode(',', $event['tagNames']) : [];
+		$event['orgnizers'] = $event['orgnizers'] ? explode(',', $event['orgnizers']) : [];
+		$event['participants'] = $event['participants'] ? explode(',', $event['participants']) : [];
+		$event['interested'] = $event['interested'] ? explode(',', $event['interested']) : [];
+		$event['tagIds'] = $event['tagIds'] ? explode(',', $event['tagIds']) : [];
 	}
-
 	return $result;
 }
 
-function getEventById($id)
+function getFutureEvents($limit = 10)
 {
-	$events = getEvents(1, false, [], [], $id); // Récupère un seul événement, même s'il est passé
-	return count($events) > 0 ? $events[0] : false;
+	return getEvents($limit, "WHERE e.end_time > NOW()");
 }
 
-function insertEvent($title, $content, $start_time, $end_time, $location, $image, $association_id, $author_id, $organizers = [], $tags = [])
+function getEvent($id)
 {
-	// Insertion de l'événement principal
-	$SQL = "INSERT INTO events (title, content, start_time, end_time, location, image, association, author) VALUES ('$title', '$content', '$start_time', '$end_time', '$location', '$image', '$association_id', '$author_id')";
-	$eventId = SQLInsert($SQL);
+	$results = getEvents(1, "WHERE e.id = " . intval($id));
+	return count($results) > 0 ? $results[0] : null;
+}
 
-	if ($eventId) {
-		// Insertion des tags associés
-		foreach ($tags as $tagId) {
-			$tagId = intval($tagId);
-			SQLInsert("INSERT IGNORE INTO event_tags (event, tag) VALUES ('$eventId', '$tagId')");
-		}
+function getEventTags($id)
+{
+	$SQL = "SELECT tag FROM event_tags WHERE event = " . intval($id);
+	return parcoursRs(SQLSelect($SQL));
+}
 
-		// Insertion des organisateurs dans la table involvements
-		foreach ($organizers as $organizerId) {
-			$organizerId = intval($organizerId);
-			SQLInsert("INSERT INTO involvements (event, user, type) VALUES ('$eventId', '$organizerId', 'orga')");
-		}
+function getEventOrgnizers($id)
+{
+	$SQL = "SELECT user FROM involvements WHERE event = " . intval($id) . " AND type = 'orga'";
+	return parcoursRs(SQLSelect($SQL));
+}
+
+function getEventParticipants($id)
+{
+	$SQL = "SELECT user FROM involvements WHERE event = " . intval($id) . " AND type = 'participate'";
+	return parcoursRs(SQLSelect($SQL));
+}
+
+function getEventInterested($id)
+{
+	$SQL = "SELECT user FROM involvements WHERE event = " . intval($id) . " AND type = 'interested'";
+	return parcoursRs(SQLSelect($SQL));
+}
+
+// ---- Associations ---- //
+
+function getAssociation($id)
+{
+	$SQL = "SELECT * FROM associations WHERE id = " . intval($id);
+	$results = parcoursRs(SQLSelect($SQL));
+	return count($results) > 0 ? $results[0] : null;
+}
+
+function getAssociations($search = "")
+{
+	$SQL = "SELECT * FROM associations";
+
+	if ($search != "") {
+		$SQL .= " WHERE name LIKE '%$search%'";
 	}
-	return $eventId;
+
+	return parcoursRs(SQLSelect($SQL));
+}
+
+function getUserAssociations($idUser)
+{
+	$SQL = "SELECT * FROM associations WHERE admin = " . intval($idUser);
+	return parcoursRs(SQLSelect($SQL));
+}
+
+function getTagById($id)
+{
+	$SQL = "SELECT * FROM tags WHERE id = " . intval($id);
+	$results = parcoursRs(SQLSelect($SQL));
+	return count($results) > 0 ? $results[0] : null;
+}
+
+function getTags($search = "")
+{
+	$SQL = "SELECT * FROM tags";
+
+	if ($search != "") {
+		$SQL .= " WHERE name LIKE '%$search%'";
+	}
+
+	return parcoursRs(SQLSelect($SQL));
 }
 
 // ---- Involvements ---- //
 
-function insertInvolvement($eventId, $userId, $type)
+function insertInvolvement($idUser, $idEvent, $type = "participate")
 {
-	// Empêcher les duplicatas si l'utilisateur est déjà impliqué de ce type
-	$SQL = "INSERT INTO involvements (event, user, type) VALUES ('$eventId', '$userId', '$type') ON DUPLICATE KEY UPDATE type=type"; // La clause ON DUPLICATE KEY UPDATE ne fait rien si la ligne existe déjà
+	$SQL = "INSERT INTO involvements(user, event, type) VALUES('$idUser', '$idEvent', '$type')";
 	return SQLInsert($SQL);
 }
 
-function getInvolvements($eventId = null, $userId = null)
+function deleteInvolvement($idUser, $idEvent, $type = "participate")
 {
-	$SQL = "SELECT id, event, user, type FROM involvements";
-	$conditions = [];
-	if ($eventId !== null) {
-		$conditions[] = "event='$eventId'";
-	}
-	if ($userId !== null) {
-		$conditions[] = "user='$userId'";
-	}
-	if (!empty($conditions)) {
-		$SQL .= " WHERE " . implode(' AND ', $conditions);
-	}
+	$SQL = "DELETE FROM involvements WHERE user = '$idUser' AND event = '$idEvent' AND type = '$type'";
+	return SQLDelete($SQL);
+}
+
+function getUserEventInvolvementIds($idUser, $type = "participate")
+{
+	$SQL = "SELECT event FROM involvements WHERE user = '$idUser' AND type = '$type'";
 	return parcoursRs(SQLSelect($SQL));
 }
 
-// ---- Tags ---- //
-
-/**
- * Récupère tous les tags de la base de données.
- * @return array Tableau d'objets ou de tableaux associatifs représentant les tags.
- */
-function getTags()
+function isUserInvolvedInEvent($idUser, $idEvent, $type = "participate")
 {
-	$SQL = "SELECT id, name FROM tags ORDER BY name ASC";
-	return parcoursRs(SQLSelect($SQL));
+	$SQL = "SELECT COUNT(*) FROM involvements WHERE user = '$idUser' AND event = '$idEvent' AND type = '$type'";
+	$count = SQLGetChamp($SQL);
+	return $count > 0;
 }
 
-
-// ---- Thèmes ---- //
-
-function getThemes()
+function getBadgeByName($name)
 {
-	$SQL = "SELECT id, name, display_name FROM themes ORDER BY name ASC";
-	return parcoursRs(SQLSelect($SQL));
+	$SQL = "SELECT * FROM badges WHERE name = '$name'";
+	$results = parcoursRs(SQLSelect($SQL));
+	return count($results) > 0 ? $results[0] : null;
 }
 
-// ---- Fonctions de calcul de badges (exemple) ---- //
-
-function getUserEngagementData($idUser)
+function getUserInvolvementData($idUser)
 {
+	$idUser = intval($idUser);
+
 	$SQL = "SELECT
-                COUNT(DISTINCT CASE WHEN type='participant' THEN event END) AS participated,
-                COUNT(DISTINCT CASE WHEN type='interested' THEN event END) AS interested,
-                COUNT(DISTINCT CASE WHEN type='orga' THEN event END) AS organized
-            FROM involvements
-            WHERE user='$idUser'";
+		u.id,
+		COUNT(DISTINCT CASE WHEN i.type = 'participate' THEN i.event END) AS participated,
+		COUNT(DISTINCT CASE WHEN i.type = 'interested' THEN i.event END) AS interested,
+		COUNT(DISTINCT CASE WHEN i.type = 'orga' THEN i.event END) AS organized
+	FROM users u
+	LEFT JOIN involvements i ON i.user = u.id
+	LEFT JOIN events e ON e.author = u.id
+	WHERE u.id = $idUser
+	GROUP BY u.id
+	";
+
 	$result = parcoursRs(SQLSelect($SQL));
-	return $result ? $result[0] : ['participated' => 0, 'interested' => 0, 'organized' => 0];
+	return count($result) > 0 ? $result[0] : null;
+}
+
+function getUserDistinctParticipationMonths($idUser)
+{
+	$SQL = "SELECT COUNT(DISTINCT DATE_FORMAT(e.start_time, '%Y-%m')) AS distinct_months
+			FROM involvements i
+			JOIN events e ON i.event = e.id
+			WHERE i.user = $idUser AND i.type = 'participate'";
+
+	$result = SQLGetChamp($SQL);
+	return $result ? intval($result) : 0;
 }
 
 function getUserBadges($idUser)
 {
 	$badges = [];
-	// Badge Newcomer (assumé donné à la première connexion)
-	$badge = getBadgeByName("newcomer");
+	$badge = getBadgeByName("newcomer");  // 🎯 Nouveau venu
 	if ($badge)
 		$badges[] = $badge;
 
-	$involvementData = getUserEngagementData($idUser);
+	$involvementData = getUserInvolvementData($idUser);
 
 	if (!$involvementData)
 		return $badges;
@@ -303,26 +338,20 @@ function getUserBadges($idUser)
 			$badges[] = $badge;
 	}
 
-	// Pour les badges 'loyal' et 'pioneer', cela nécessite des logiques plus complexes,
-	// par ex. stocker la date de première activité ou le numéro d'ordre d'inscription.
-	// Ces badges sont laissés pour implémentation future ou logique plus avancée.
+	// Badge fidélité : événements sur 3 mois différents
+	if (getUserDistinctParticipationMonths($idUser) >= 3) {
+		$badge = getBadgeByName("loyal"); // 🔁 Fidèle
+		if ($badge)
+			$badges[] = $badge;
+	}
+
+	if ($idUser <= 10) {
+		$badge = getBadgeByName("pioneer"); // 🧭 Pionnier.ère
+		if ($badge)
+			$badges[] = $badge;
+	}
 
 	return $badges;
 }
 
-// Fonction pour l'authentification CAS
-function validerUser($auth_token)
-{
-	// Vérifier si un utilisateur avec ce token existe
-	$SQL = "SELECT id, username, role FROM users WHERE token_hash='$auth_token'";
-	$user = parcoursRs(SQLSelect($SQL));
-
-	if (count($user) > 0) {
-		$_SESSION["idUser"] = $user[0]["id"];
-		$_SESSION["username"] = $user[0]["username"];
-		$_SESSION["role"] = $user[0]["role"];
-		$_SESSION["connecte"] = true; // Indique que l'utilisateur est connecté
-		return true;
-	}
-	return false;
-}
+?>
