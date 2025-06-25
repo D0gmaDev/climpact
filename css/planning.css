@@ -1,0 +1,262 @@
+/* Variables CSS pour faciliter les modifications */
+:root {
+    --primary-color: #007bff; /* Bleu CLImpact */
+    --text-color-dark: #333;
+    --text-color-light: #666;
+    --border-color: #e0e0e0;
+    --background-light: #f9f9f9;
+    --background-white: #ffffff;
+    --header-background: #ffffff;
+    --event-background-color: #f0e6da; /* Couleur des événements sur la maquette */
+    --event-border-color: #d1b896; /* Bordure plus foncée pour les événements */
+    --time-line-color: #ff0000;
+}
+
+.planning-section {
+    font-family: 'Arial', sans-serif; /* Utilise la police de ta maquette si tu l'as */
+    padding: 20px;
+    background-color: var(--background-light);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin: 20px; /* Adapte la marge selon ton layout global */
+}
+
+.planning-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: var(--header-background);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.planning-title-container {
+    flex-grow: 1; /* Permet au titre de prendre de la place */
+}
+
+.planning-title {
+    font-size: 1.5em;
+    color: var(--text-color-dark);
+    margin: 0;
+}
+
+.planning-navigation {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 20px; /* Espacement autour de la navigation */
+}
+
+.nav-arrow {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 1.2em;
+    color: var(--text-color-light);
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.nav-arrow:hover {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.current-period-display {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: var(--text-color-dark);
+    white-space: nowrap; /* Empêche le texte de se casser sur plusieurs lignes */
+}
+
+.planning-view-switcher {
+    display: flex;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    overflow: hidden; /* Pour que les bordures des boutons se fondent */
+}
+
+.view-button {
+    background-color: var(--background-white);
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    color: var(--text-color-light);
+    font-size: 0.9em;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.view-button:not(:last-child) {
+    border-right: 1px solid var(--border-color);
+}
+
+.view-button.active {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold;
+}
+
+.view-button:not(.active):hover {
+    background-color: #f0f0f0;
+}
+
+/* --- Planning Grid --- */
+.planning-grid-container {
+    display: grid;
+    grid-template-columns: 70px 1fr; /* Colonne des heures | Colonne des jours */
+    background-color: var(--background-white);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative; /* Pour positionner la barre horaire et d'autres éléments */
+}
+
+.time-axis {
+    padding-top: 40px; /* Pour aligner avec les en-têtes de jour */
+    border-right: 1px solid var(--border-color);
+    background-color: #fafafa;
+}
+
+.time-slot {
+    height: 48px; /* Hauteur pour un créneau de 30 minutes ou 1 heure, à ajuster */
+    line-height: 48px; /* Centre le texte verticalement */
+    text-align: right;
+    padding-right: 10px;
+    font-size: 0.8em;
+    color: var(--text-color-light);
+    border-bottom: 1px dashed #eee;
+    box-sizing: border-box;
+}
+.time-slot:first-child {
+    height: 0; /* cache le 00:00 */
+    border-bottom: none;
+}
+.time-slot:last-child {
+    border-bottom: none;
+}
+
+.days-container {
+    display: flex; /* Utilise flexbox pour les en-têtes et la grille d'événements */
+    flex-direction: column;
+    position: relative; /* Pour la barre horaire */
+}
+
+.day-headers-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7 jours */
+    border-bottom: 1px solid var(--border-color);
+    background-color: #fafafa;
+}
+
+.day-header {
+    text-align: center;
+    padding: 10px 0;
+    font-size: 0.9em;
+    font-weight: bold;
+    color: var(--text-color-dark);
+    border-right: 1px solid #eee;
+}
+
+.day-header:last-child {
+    border-right: none;
+}
+
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7 jours */
+    position: relative; /* Pour les événements positionnés absolument */
+    min-height: 720px; /* 24 heures * 30px par 30 minutes (si 48px pour 1 heure) = 24 * 48px = 1152px ou 24 * 30px = 720px */
+    overflow-y: auto; /* Permet le défilement si le contenu dépasse */
+}
+
+.day-column {
+    position: relative; /* Pour positionner les événements dans cette colonne */
+    border-right: 1px solid #eee;
+    height: 100%; /* Important pour que la colonne s'étende */
+    box-sizing: border-box;
+    /* Ajout de lignes horizontales pour les heures */
+    background-image: linear-gradient(to bottom, #eee 1px, transparent 1px);
+    background-size: 100% 48px; /* Lignes tous les 48px (1 heure) */
+}
+
+.day-column:last-child {
+    border-right: none;
+}
+
+/* --- Event Card --- */
+.event-card {
+    background-color: var(--event-background-color);
+    border-left: 4px solid var(--event-border-color); /* Couleur de la bordure latérale des events */
+    padding: 5px 8px;
+    margin: 1px 3px; /* Petites marges pour l'espacement */
+    border-radius: 4px;
+    position: absolute; /* Positionnement absolu pour le placement basé sur l'heure */
+    width: calc(100% - 6px); /* Largeur moins les marges */
+    box-sizing: border-box;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    font-size: 0.9em;
+    color: var(--text-color-dark);
+}
+
+.event-time-range {
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 3px;
+    font-size: 0.85em;
+}
+
+.event-title {
+    font-size: 1em;
+    font-weight: bold;
+    margin: 0;
+    line-height: 1.2;
+    color: var(--text-color-dark);
+}
+
+.event-location, .event-content {
+    font-size: 0.75em;
+    margin-top: 3px;
+    color: var(--text-color-light);
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limite à 2 lignes */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- Current Time Line (Barre Rouge) --- */
+.current-time-line {
+    position: absolute;
+    height: 2px;
+    background-color: var(--time-line-color);
+    z-index: 10;
+    width: calc(100% - 70px); /* Toute la largeur des jours */
+    left: 70px; /* Décaler de la largeur de la colonne des heures */
+}
+
+/* --- Responsive Adjustments (Basique) --- */
+@media (max-width: 768px) {
+    .planning-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .planning-navigation, .planning-view-switcher {
+        margin: 0;
+    }
+    .planning-grid-container {
+        grid-template-columns: 50px 1fr;
+    }
+    .time-axis {
+        padding-top: 30px;
+    }
+    .current-time-line {
+        left: 50px;
+        width: calc(100% - 50px);
+    }
+}
