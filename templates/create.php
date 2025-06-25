@@ -194,266 +194,249 @@ $defaultAssociationId = valider("association");
 </script>
 
 <style>
-    /* --- IMPORTATION DE LA POLICE --- */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/*
+================================================================
+| STYLES POUR LES FORMULAIRES (EX: PAGE CRÉATION D'ÉVÉNEMENT)  |
+================================================================
+*/
 
-    /* --- STYLES GÉNÉRAUX ET RESET --- */
-    *,
-    *::before,
-    *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
+/* --- Réinitialisation et règle d'or du layout --- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
 
-    body {
-        font-family: 'Inter', sans-serif;
-        background-color: #f4f7f9;
-        /* Fond gris clair pour la page */
-        color: #333;
-        line-height: 1.6;
-        padding: 2rem 1rem;
-    }
+/* --- Conteneur principal du formulaire --- */
+.form-container {
+    /* On utilise la largeur disponible, avec un padding pour l'aération */
+    width: 100%; 
+    background-color: #ffffff;
+    padding: 2rem 2.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-grey);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
 
-    /* --- CONTENEUR PRINCIPAL DU FORMULAIRE --- */
+/* --- Groupes de champs et labels --- */
+.form-group {
+    margin-bottom: 1.75rem; /* On augmente un peu l'espace */
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    margin-bottom: 0.6rem;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* --- Style unifié pour les champs de texte, etc. --- */
+input[type="text"],
+input[type="url"],
+input[type="date"],
+input[type="time"],
+textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    font-family: inherit; /* Hérite de la police du body */
+    border: 1px solid var(--border-grey);
+    border-radius: 8px;
+    background-color: var(--light-grey);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="url"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color); /* Vert Climpact au focus */
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(45, 140, 77, 0.2); /* Ombre verte transparente */
+}
+
+textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+::placeholder {
+    color: #999;
+    opacity: 1;
+}
+
+/* --- Grille pour les dates --- */
+.date-time-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.date-time-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* --- Bouton de soumission --- */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    border-top: 1px solid var(--border-grey);
+    padding-top: 1.5rem;
+}
+
+/* On réutilise les classes de bouton existantes pour la cohérence */
+/* Assurez-vous que votre bouton dans le HTML a bien la classe "btn btn-primary" */
+/* Si vous gardez .btn-poster, ce style s'appliquera : */
+.btn-poster {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-poster:hover {
+    background-color: #226d3d; /* Version plus sombre du vert */
+    transform: translateY(-2px);
+}
+
+/* ================================================================
+| HARMONISATION DE SELECT2 AVEC LE THÈME CLIMPACT               |
+================================================================
+*/
+
+/* --- Style général des conteneurs Select2 --- */
+.select2-container--default .select2-selection--single,
+.select2-container--default .select2-selection--multiple {
+    border: 1px solid var(--border-grey);
+    border-radius: 8px;
+    background-color: var(--light-grey);
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--multiple,
+.select2-container--default.select2-container--focus .select2-selection--single {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(45, 140, 77, 0.2);
+}
+
+/* Style pour la sélection unique (Association) */
+.select2-container--default .select2-selection--single {
+    height: auto;
+    padding: 0.75rem 1rem;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 1.5;
+    padding-left: 0;
+    color: var(--text-color);
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 100%;
+    top: 0;
+    right: 0.5rem;
+}
+
+/* Style pour la sélection multiple (Tags, Organisateurs) */
+.select2-container--default .select2-selection--multiple {
+    padding: 0.3rem 0.5rem 0;
+    cursor: text;
+}
+.select2-container--default .select2-selection--multiple .select2-search__field {
+    padding: 0.4rem 0.5rem;
+    margin-top: 0;
+    width: 100% !important;
+}
+
+/* Style des "pilules" (tags sélectionnés) */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: var(--primary-color);
+    border: 1px solid #226d3d;
+    color: white;
+    border-radius: 6px;
+    margin: 4px !important;
+    
+    /* --- AJOUTS POUR CORRIGER LA SUPERPOSITION --- */
+    display: inline-flex;       /* On utilise flex pour aligner le texte et la croix */
+    align-items: center;       /* On centre verticalement les éléments */
+    padding: 5px 6px 5px 10px; /* On ajuste le padding (plus à gauche, moins à droite) */
+}
+
+/* --- ✨ CORRECTION DU BUG DE LA CROIX ✨ --- */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+    margin-left: 5px; /* On met la marge à gauche de la croix */
+    border: none !important; /* On supprime toute bordure qui pourrait causer le trait vertical */
+    background-color: transparent !important; /* On assure qu'il n'y a pas de fond */
+    transition: color 0.2s;
+
+    margin-left: 6px;  /* Espace entre le texte et la croix */
+    padding: 0 4px;     /* Ajoute une zone de clic plus confortable */
+    order: 2;           /* S'assure que la croix est bien l'élément de droite */
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+    color: white;
+}
+
+/* Style de la liste déroulante qui s'ouvre */
+.select2-dropdown {
+    border: 1px solid var(--border-grey);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    background-color: #fff;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.select2-results__option[aria-selected=true] {
+    background-color: var(--active-bg); /* Fond vert clair pour un élément déjà sélectionné */
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* --- Styles pour les écrans plus petits --- */
+@media (max-width: 768px) {
     .form-container {
-        max-width: 800px;
-        margin: 0 auto;
-        background-color: #ffffff;
-        padding: 2.5rem;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(14, 21, 47, 0.08);
+        padding: 1.5rem;
     }
-
-    /* --- GROUPES DE CHAMPS ET LABELS --- */
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    label {
-        display: block;
-        font-weight: 600;
-        font-size: 0.9rem;
-        color: #495057;
-        margin-bottom: 0.5rem;
-    }
-
-    /* Classe pour les labels destinés uniquement aux lecteurs d'écran */
-    .sr-only {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border-width: 0;
-    }
-
-
-    /* --- STYLE UNIFIÉ POUR LES CHAMPS DE TEXTE, URL, DATE, ETC. --- */
-    input[type="text"],
-    input[type="url"],
-    input[type="date"],
-    input[type="time"],
-    textarea {
-        width: 100%;
-        padding: 0.8rem 1rem;
-        font-size: 1rem;
-        font-family: 'Inter', sans-serif;
-        border: 1px solid #ced4da;
-        border-radius: 8px;
-        background-color: #f8f9fa;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    input[type="text"]:focus,
-    input[type="url"]:focus,
-    input[type="date"]:focus,
-    input[type="time"]:focus,
-    textarea:focus {
-        outline: none;
-        border-color: #007bff;
-        background-color: #fff;
-        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
-    }
-
-    textarea {
-        resize: vertical;
-        min-height: 120px;
-    }
-
-    ::placeholder {
-        color: #868e96;
-        opacity: 1;
-    }
-
-    /* --- GRILLE POUR LES DATES (DÉBUT/FIN) --- */
     .date-time-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
+        grid-template-columns: 1fr;
     }
-
-    .date-time-group {
-        display: flex;
-        gap: 0.5rem;
-    }
-
-    /* --- BOUTON DE SOUMISSION --- */
     .form-actions {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 2rem;
-    }
-
-    .btn-poster {
-        display: inline-flex;
-        align-items: center;
         justify-content: center;
-        padding: 0.8rem 1.8rem;
-        background: linear-gradient(45deg, #007bff, #0056b3);
-        color: #ffffff;
-        border: none;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
     }
-
-    .btn-poster:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0, 123, 255, 0.3);
+    .btn-poster {
+        width: 100%;
     }
-
-    .btn-poster svg {
-        margin-right: 0.5rem;
-    }
-
-    /* --- STYLES PERSONNALISÉS POUR SELECT2 --- */
-
-    .select2-container--default .select2-selection--single,
-    .select2-container--default .select2-selection--multiple {
-        border: 1px solid #ced4da;
-        border-radius: 8px;
-        background-color: #f8f9fa;
-        font-family: 'Inter', sans-serif;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    /* Conteneur single-select (Association) - Pas de changement ici */
-    .select2-container--default .select2-selection--single {
-        height: calc(1.6em + 1.6rem + 2px);
-        padding: 0.8rem 1rem;
-    }
-
-    .select2-container--default .select2-selection--single .select2-selection__rendered {
-        line-height: 1.6;
-        padding-left: 0;
-        color: #495057;
-    }
-
-    .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: calc(1.6em + 1.6rem);
-        right: 0.5rem;
-    }
-
-    /* * CORRECTION POUR LES CONTENEURS MULTI-SELECT (Tags, Organisateurs)
- */
-    .select2-container--default .select2-selection--multiple {
-        /* On supprime la hauteur minimale fixe (min-height) pour laisser le conteneur s'adapter. */
-        /* On applique un padding qui fonctionnera bien quand des éléments sont ajoutés. */
-        padding: 0.4rem 0.5rem 0;
-        cursor: text;
-    }
-
-    /* C'est la clé : On cible le champ de recherche interne pour contrôler la hauteur "vide" */
-    .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field {
-        /* On lui donne le padding vertical pour simuler la hauteur d'un input normal */
-        padding: 0.45rem 0.5rem;
-        margin-top: 0;
-        /* On reset la marge pour un meilleur contrôle */
-        width: 100% !important;
-        /* S'assure qu'il prend la largeur disponible */
-    }
-
-    /* Style des "pilules" (tags sélectionnés) */
-    .select2-container--default .select2-selection--multiple .select2-selection__choice {
-        background-color: #007bff;
-        border-color: #006fe6;
-        color: white;
-        border-radius: 5px;
-        padding: 5px 8px;
-        margin: 4px !important;
-        /* Marge uniforme pour un espacement propre */
-    }
-
-    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-        color: rgba(255, 255, 255, 0.8);
-        font-size: 1.1rem;
-        margin-right: 3px;
-        transition: color 0.2s;
-    }
-
-    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
-        color: white;
-    }
-
-
-    /* Style du conteneur en état de focus */
-    .select2-container--default.select2-container--open .select2-selection,
-    .select2-container--default .select2-selection:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
-    }
-
-    /* Style de la liste déroulante (identique) */
-    .select2-dropdown {
-        border: 1px solid #ced4da;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        /* Assure que les coins arrondis s'appliquent bien */
-    }
-
-    .select2-results__option--highlighted[aria-selected] {
-        background-color: #007bff;
-    }
-
-    /* --- ALERTES (POUR LES ERREURS) --- */
-    .alert.alert-danger {
-        padding: 1rem;
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-        border-radius: 8px;
-        margin-bottom: 1.5rem;
-    }
-
-
-    /* --- RESPONSIVE DESIGN --- */
-    @media (max-width: 768px) {
-        .form-container {
-            padding: 1.5rem;
-        }
-
-        /* La grille des dates passe sur une seule colonne */
-        .date-time-grid {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            /* Le gap vertical reste le même que celui des form-group */
-        }
-
-        .form-actions {
-            justify-content: center;
-            /* Centre le bouton sur mobile */
-        }
-
-        .btn-poster {
-            width: 100%;
-        }
-    }
+}
 </style>
