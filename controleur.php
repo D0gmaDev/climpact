@@ -69,7 +69,6 @@ if ($action = valider("action")) {
 
 			if ($newEventId) {
 				$_SESSION['hasAssociation'] = true; // Mettre à jour l'état de l'utilisateur
-				$qs = "?view=event&id=" . $newEventId;
 			} else {
 				$qs = "?view=create&error=eventcreation";
 			}
@@ -156,17 +155,13 @@ if ($action = valider("action")) {
 	}
 }
 
-// On redirige toujours vers la page index, mais on ne connait pas le répertoire de base
-// On l'extrait donc du chemin du script courant : $_SERVER["PHP_SELF"]
-// Par exemple, si $_SERVER["PHP_SELF"] vaut /chat/data.php, dirname($_SERVER["PHP_SELF"]) contient /chat
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
+$host = $_SERVER['HTTP_HOST'];
+$basePath = rtrim(dirname($_SERVER["PHP_SELF"]), "/\\");
+$urlBase = "$protocol://$host$basePath/index.php";
 
-$urlBase = dirname($_SERVER["PHP_SELF"]) . "/index.php";
-// On redirige vers la page index avec les bons arguments
-//die($urlBase);
 header("Location:" . $urlBase . $qs);
-//qs doit contenir le symbole '?'
 
-// On écrit seulement après cette entête
 ob_end_flush();
 
 ?>
