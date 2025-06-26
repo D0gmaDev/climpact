@@ -17,7 +17,7 @@
         <button id="resetFilterBtn" style="margin-top: 10px; margin-left: 0px;">Réinitialiser</button> 
         </div>
 
-    <h2>Derniers événements</h2>
+    <h2>Evénements à venir</h2>
 
     <?php if (empty($events)): ?>
         <p>Aucun événement à afficher pour le moment, ou aucun événement ne correspond aux critères de filtre.</p>
@@ -46,6 +46,37 @@
             </div>
         <?php endforeach; ?>
     <?php endif; ?>
+
+    <h2>Historique des événements</h2>
+
+    <?php if (empty($events)): ?>
+        <p>Aucun événement à afficher pour le moment, ou aucun événement ne correspond aux critères de filtre.</p>
+    <?php else: ?>
+        <?php foreach ($eventsHistory as $event): ?>
+            <div class="event" style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px;">
+                <h3><?= htmlspecialchars($event['title']) ?></h3>
+
+                <?php if (!empty($event['tagNames'])): ?>
+                    <p>
+                        <strong>Tags :</strong>
+                        <?php foreach ($event['tagNames'] as $tagName): ?>
+                            <span class="event-tag" style="background-color: #e0e0e0; padding: 3px 8px; border-radius: 5px; margin-right: 5px; display: inline-block;"><?= htmlspecialchars($tagName) ?></span>
+                        <?php endforeach; ?>
+                    </p>
+                <?php endif; ?>
+
+                <p><?= nl2br(htmlspecialchars($event['content'])) ?></p>
+                <p><strong>Début :</strong> <?= $event['start_time'] ?></p>
+                <p><strong>Fin :</strong> <?= $event['end_time'] ?></p>
+                <p><strong>Lieu :</strong> <?= htmlspecialchars($event['location']) ?></p>
+                <?php if (!empty($event['image'])): ?>
+                    <img src="<?= htmlspecialchars($event['image']) ?>" alt="Image événement" style="max-width: 200px; height: auto; display: block; margin-top: 10px;">
+                <?php endif; ?>
+                <hr>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

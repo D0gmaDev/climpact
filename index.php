@@ -38,8 +38,11 @@ if ($view == "accueil") {
     $selectedTagIds = array_map('intval', $selectedTagIds);
     $selectedTagIds = array_filter($selectedTagIds); // Supprime les 0 si la conversion a échoué
 
-    // Filtrer les événements si des tags sont sélectionnés
+    // Filtrer les événements si des tags sont sélectionnés - evenements à venir
     $events = getEvents(10, true, $selectedTagIds);
+        // Filtrer les événements si des tags sont sélectionnés - tous les evenements
+    $eventsHistory = getEvents(10, false, $selectedTagIds);
+
 }
 
 if (file_exists("templates/$view.php")) {
