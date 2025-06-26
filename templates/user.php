@@ -19,7 +19,6 @@ $userEventInterestId = getUserEventInvolvementIds($user['id'], $type = "interest
 
 
 
-
 $userEvents = [];
 
 foreach ($userEventParticipationId as $id) {
@@ -273,7 +272,7 @@ foreach ($userEventInterestId as $id) {
     
     <div class="profile-header">
         <div class="profile-photo">
-            <img src="<?php echo $user['profilePhoto'] ?? 'https://via.placeholder.com/120x120/2c5f2d/ffffff?text=' . strtoupper(substr($user['firstName'], 0, 1) . substr($user['lastName'], 0, 1)); ?>" 
+            <img src="<?php echo valider('picture', 'SESSION') . strtoupper(substr($user['firstName'], 0, 1) . substr($user['lastName'], 0, 1)); ?>" 
                  alt="Photo de profil" id="profileImg">
             <button class="photo-edit-btn" onclick="openPhotoModal()">📷</button>
         </div>
