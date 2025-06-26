@@ -2,6 +2,14 @@
     <h1>Accueil</h1>
     <p>Bienvenue sur notre site CLimpact</p>
 
+    <?php
+    // Définir les noms des mois en français
+    $mois_fr = [
+        1 => 'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+        'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'
+    ];
+    ?>
+
     <h2>Filtrer par tags</h2>
     <div class="tag-filter-container">
         <select id="tagSelect" multiple="multiple" style="width: 100%;">
@@ -36,8 +44,20 @@
                 <?php endif; ?>
 
                 <p><?= nl2br(htmlspecialchars($event['content'])) ?></p>
-                <p><strong>Début :</strong> <?= $event['start_time'] ?></p>
-                <p><strong>Fin :</strong> <?= $event['end_time'] ?></p>
+                <p>
+                    <strong>Début :</strong> le 
+                    <?= date('d', strtotime($event['start_time'])) ?> 
+                    <?= $mois_fr[date('n', strtotime($event['start_time']))] ?> 
+                    <?= date('Y', strtotime($event['start_time'])) ?> à 
+                    <?= date('H:i', strtotime($event['start_time'])) ?>
+                </p>
+                <p>
+                    <strong>Fin :</strong> le 
+                    <?= date('d', strtotime($event['end_time'])) ?> 
+                    <?= $mois_fr[date('n', strtotime($event['end_time']))] ?> 
+                    <?= date('Y', strtotime($event['end_time'])) ?> à 
+                    <?= date('H:i', strtotime($event['end_time'])) ?>
+                </p>
                 <p><strong>Lieu :</strong> <?= htmlspecialchars($event['location']) ?></p>
                 <?php if (!empty($event['image'])): ?>
                     <img src="<?= htmlspecialchars($event['image']) ?>" alt="Image événement" style="max-width: 200px; height: auto; display: block; margin-top: 10px;">
@@ -66,8 +86,20 @@
                 <?php endif; ?>
 
                 <p><?= nl2br(htmlspecialchars($event['content'])) ?></p>
-                <p><strong>Début :</strong> <?= $event['start_time'] ?></p>
-                <p><strong>Fin :</strong> <?= $event['end_time'] ?></p>
+                <p>
+                    <strong>Début :</strong> le 
+                    <?= date('d', strtotime($event['start_time'])) ?> 
+                    <?= $mois_fr[date('n', strtotime($event['start_time']))] ?> 
+                    <?= date('Y', strtotime($event['start_time'])) ?> à 
+                    <?= date('H:i', strtotime($event['start_time'])) ?>
+                </p>
+                <p>
+                    <strong>Fin :</strong> le 
+                    <?= date('d', strtotime($event['end_time'])) ?> 
+                    <?= $mois_fr[date('n', strtotime($event['end_time']))] ?> 
+                    <?= date('Y', strtotime($event['end_time'])) ?> à 
+                    <?= date('H:i', strtotime($event['end_time'])) ?>
+                </p>
                 <p><strong>Lieu :</strong> <?= htmlspecialchars($event['location']) ?></p>
                 <?php if (!empty($event['image'])): ?>
                     <img src="<?= htmlspecialchars($event['image']) ?>" alt="Image événement" style="max-width: 200px; height: auto; display: block; margin-top: 10px;">

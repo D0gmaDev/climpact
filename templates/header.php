@@ -55,7 +55,7 @@ $current_view = valider("view") ?: 'accueil';
 						$.each(users, function (index, user) {
 							const fullName = `${user.firstName} ${user.lastName}`;
 							const userLink = $('<a></a>')
-								.attr('href', `index.php?view=user&id=${user.id}`)
+								.attr('href', `index.php?view=user&username=${user.username}`)
 								.text(fullName);
 
 							resultsContainer.append(userLink);
@@ -364,8 +364,8 @@ $current_view = valider("view") ?: 'accueil';
 						<a href="index.php?view=notifications" class="icon-button">
 							<i class="fas fa-bell"></i>
 						</a>
-						<a href="index.php?view=profil">
-							<img src="<?php echo valider('avatar', 'SESSION') ? valider('avatar', 'SESSION') : 'media/default_avatar.png'; ?>"
+						<a href="index.php?view=user&username=<?php echo valider('username', 'SESSION'); ?>" class="icon-button">
+							<img src="<?php echo valider('avatar', 'SESSION') ? valider('avatar', 'SESSION') : 'media/default-avatar.png'; ?>"
 								alt="Mon profil" class="profile-pic">
 						</a>
 					</div>
