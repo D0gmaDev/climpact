@@ -272,7 +272,7 @@ foreach ($userEventInterestId as $id) {
     
     <div class="profile-header">
         <div class="profile-photo">
-            <img src="<?php echo valider('picture', 'SESSION') . strtoupper(substr($user['firstName'], 0, 1) . substr($user['lastName'], 0, 1)); ?>" 
+            <img src="<?php echo $user['picture'] . strtoupper(substr($user['firstName'], 0, 1) . substr($user['lastName'], 0, 1)); ?>" 
                  alt="Photo de profil" id="profileImg">
             <button class="photo-edit-btn" onclick="openPhotoModal()">📷</button>
         </div>
@@ -608,12 +608,5 @@ if (!$user) {
 	echo "<p>Aucun utilisateur trouvé avec le nom d'utilisateur : $username</p>";
 	exit;
 }
-
-tprint($user);
-
-echo "<h2>Détails de l'utilisateur : $username</h2>";
-echo "<p>ID : " . $user['id'] . "</p>";
-echo "<p>Nom : " . $user['firstName'] . " " . $user['lastName'] . "</p>";
-echo "<p>Cursus : " . $user['cursus'] . "</p>";
 
 ?>
