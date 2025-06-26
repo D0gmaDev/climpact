@@ -60,6 +60,77 @@ switch ($entity) {
         }
         break;
 
+    case "fetch_events":
+        $selectedTagIds = isset($_POST['tags']) ? array_map('intval', $_POST['tags']) : [];
+
+        $allEvents = getEvents($activeOnly = true, $tagIds = $selectedTagIds);
+
+        $now = date('Y-m-d H:i:s');
+        $upcoming = array_filter($allEvents, fn($e) => $e['start_time'] > $now);
+        $history = array_filter($allEvents, fn($e) => $e['start_time'] <= $now);
+
+        $data["success"] = true;
+        $data["status"] = 200;
+        $data["upcoming"] = array_values($upcoming);
+        $data["history"] = array_values($history);
+        break;
+
+    case "toggle_interest":
+        session_start();
+        if (!valider("connecte", "SESSION")) {
+            $data["status"] = 401; // Non autorisé
+            $data["message"] = "Vous devez être connecté pour participer à un événement.";
+            break;
+        }
+
+        $idUser = valider("idUser", "SESSION");
+        $eventId = valider("event_id");
+
+        $new_interested = toggleInvolvement($idUser, $eventId, "interested");
+
+        $data["success"] = true;
+        $data["status"] = 200;
+        $data["message"] = "Participation mise à jour avec succès.";
+        $data["new_interested"] = $new_interested;
+        break;
+
+    case "toggle_participation":
+        session_start();
+        if (!valider("connecte", "SESSION")) {
+            $data["status"] = 401; // Non autorisé
+            $data["message"] = "Vous devez être connecté pour participer à un événement.";
+            break;
+        }
+
+        $idUser = valider("idUser", "SESSION");
+        $eventId = valider("event_id");
+
+        $new_participate = toggleInvolvement($idUser, $eventId);
+
+        $data["success"] = true;
+        $data["status"] = 200;
+        $data["message"] = "Participation mise à jour avec succès.";
+        $data["new_participate"] = $new_participate;
+        break;
+
+    case "get_participants":
+        $eventId = valider("event_id");
+
+        $participants = getEventParticipants($eventId);
+        $data["success"] = true;
+        $data["status"] = 200;
+        $data["participants"] = $participants;
+        break;
+
+    case "get_interested":
+        $eventId = valider("event_id");
+
+        $interested = getEventInterested($eventId);
+        $data["success"] = true;
+        $data["status"] = 200;
+        $data["interested"] = $interested;
+        break;
+
     default:
         $data["status"] = 404; // Non trouvé
         $data["message"] = "Entité '" . $entity . "' non reconnue.";
