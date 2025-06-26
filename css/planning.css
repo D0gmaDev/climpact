@@ -12,6 +12,16 @@
     --time-line-color: #ff0000;
 }
 
+.current-time-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--time-line-color);
+    z-index: 10;
+    display: none; /* cachée par défaut */
+}
+
 .planning-section {
     font-family: 'Arial', sans-serif; /* Utilise la police de ta maquette si tu l'as */
     padding: 20px;
@@ -113,6 +123,7 @@
     border-radius: 8px;
     overflow: hidden;
     position: relative; /* Pour positionner la barre horaire et d'autres éléments */
+    padding-bottom: 20px;
 }
 
 .time-axis {
@@ -229,34 +240,62 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
-/* --- Current Time Line (Barre Rouge) --- */
-.current-time-line {
-    position: absolute;
-    height: 2px;
-    background-color: var(--time-line-color);
-    z-index: 10;
-    width: calc(100% - 70px); /* Toute la largeur des jours */
-    left: 70px; /* Décaler de la largeur de la colonne des heures */
+    
+/* --- Month View Specifics --- */
+.day-header-month {
+    text-align: center;
+    font-weight: 600;
+    color: #4a5568;
+    font-size: 14px;
+    padding: 10px 0;
+    user-select: none;
 }
 
-/* --- Responsive Adjustments (Basique) --- */
-@media (max-width: 768px) {
-    .planning-header {
-        flex-direction: column;
-        gap: 15px;
-    }
-    .planning-navigation, .planning-view-switcher {
-        margin: 0;
-    }
-    .planning-grid-container {
-        grid-template-columns: 50px 1fr;
-    }
-    .time-axis {
-        padding-top: 30px;
-    }
-    .current-time-line {
-        left: 50px;
-        width: calc(100% - 50px);
-    }
+.day-cell {
+    border: 1px solid #e2e8f0;
+    border-top: none;
+    padding: 10px;
+    min-height: 120px; /* Adjust height as needed for month cells */
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.day-cell:hover {
+    background-color: #f0f4f8;
+}
+
+.day-number {
+    font-size: 18px;
+    font-weight: 600;
+    text-align: right;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.current-month-day {
+    background-color: #ffffff;
+}
+
+.other-month-day {
+    background-color: #f7fafc;
+    color: #a0aec0;
+}
+
+.other-month-day .day-number {
+    color: #a0aec0;
+}
+
+.event-dots-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.event-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #2c7a7b; /* The same green color as events */
+    border-radius: 50%;
+    flex-shrink: 0; /* Prevent dots from shrinking */
 }

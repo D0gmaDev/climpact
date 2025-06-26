@@ -45,6 +45,10 @@ if ($view == "accueil") {
 
 }
 
+if ($view == "planning"){
+    $events = getEvents();
+}
+
 if (file_exists("templates/$view.php")) {
     include("templates/$view.php"); // Inclut le TEMPLATE HTML correspondant
 } else {
