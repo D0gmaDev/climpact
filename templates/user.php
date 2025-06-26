@@ -11,13 +11,13 @@ include_once("libs/maLibForms.php"); // mkTable, mkSelect
 
 // Récupération des données additionnelles pour le profil
 // À implémenter selon votre base de données
-//$userEvents = getUserEvents($user['id']) ?? [];
-//$userBadges = getUserBadges($user['id']) ?? [];
-//$userInterests = getUserInterests($user['id']) ?? [];
-?>
 
-?>
+$user = getUserByUsername(valider("username"));
 
+$userEvents = getUserEvents($user['id']) ?? [];
+$userBadges = getUserBadges($user['id']) ?? [];
+$userInterests = getUserInterests($user['id']) ?? [];
+?>
 
 <style>
 .profile-container {
