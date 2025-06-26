@@ -96,7 +96,7 @@ $(function() {
             $card.find('.event-title').text(ev.title);
             $card.find('.event-location').text(ev.location);
             $card.find('.event-content').text(ev.content);
-            $card.css({ position: 'absolute', top: `${top}px`, height: `${height}px`, width: '90%', left: '5%' });
+            $card.css({ position: 'absolute', top: `${top}px`, height: `${height}px`, width: '100%' });
             $col.append($card);
         });
     }
@@ -197,7 +197,7 @@ $(function() {
         const now = moment();
         const todayDate = now.format('YYYY-MM-DD');
         const startOfDay = moment(todayDate).startOf('day');
-        const minutesPassed = now.diff(startOfDay, 'minutes') + 60;
+        const minutesPassed = now.diff(startOfDay, 'minutes');
 
         const headerHeight = $('.day-headers-row').outerHeight();
         const topPosition = ((minutesPassed -420) * pixelsPerMinute);
