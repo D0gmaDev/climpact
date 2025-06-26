@@ -25,7 +25,7 @@ include_once("libs/modele.php");
 
 <link rel="stylesheet" href="css/accueil.css" />
 
-<!-- jQuery et JS custom -->Z
+<!-- jQuery et JS custom -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 
@@ -62,7 +62,7 @@ include_once("libs/modele.php");
                 dataType: "json",
                 success: function (response) {
                     renderEvents("#eventContainer", response.upcoming);
-                    renderEvents("#historyContainer", response.history);
+                    renderEvents("#historyContainer", response.history, true);
                 },
                 error: function (error) {
                     console.error("Erreur lors du chargement des événements :", error);
@@ -70,7 +70,7 @@ include_once("libs/modele.php");
             });
         }
 
-        function renderEvents(containerId, events) {
+        function renderEvents(containerId, events, $disabled=false) {
             const $container = $(containerId);
             $container.empty();
 
@@ -119,10 +119,10 @@ include_once("libs/modele.php");
                     // On utilise les classes 'active' pour gérer le style
                     html += `
     <div class="actions">
-        <button class="btn-interesse ${interestedClass}" data-id="${event.id}">
+        <button class="btn-interesse ${interestedClass}" ${$disabled ? "disabled" : ""} data-id="${event.id}">
             ${isInterested ? "Ne plus être intéressé" : "Intéressé"}
         </button>
-        <button class="btn-participe ${participatingClass}" data-id="${event.id}">
+        <button class="btn-participe ${participatingClass}" ${$disabled ? "disabled" : ""} data-id="${event.id}">
             ${isParticipating ? "Ne plus participer" : "Je participe"}
         </button>
     </div>

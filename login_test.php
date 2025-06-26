@@ -32,6 +32,8 @@ if ($user = getUserById($idUser)) {
     $_SESSION['lastName'] = $user['lastName'];
     $_SESSION['cursus'] =   $user['cursus'];
 
+    $_SESSION['picture'] = getPictureById($idUser);
+
     // Redirection post-login
     header("Location: /index.php");
     exit;

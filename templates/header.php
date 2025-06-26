@@ -85,7 +85,7 @@ $current_view = valider("view") ?: 'accueil';
 </script>
 
 <style>
-	
+
 </style>
 
 <body>
@@ -141,13 +141,13 @@ $current_view = valider("view") ?: 'accueil';
 								<i class="fas fa-plus"></i> Créer un événement
 							</a>
 						<?php endif; ?>
-						<a href="index.php?view=notifications" class="icon-button">
-							<i class="fas fa-bell"></i>
-						</a>
 						<a href="index.php?view=user&username=<?php echo valider('username', 'SESSION'); ?>"
 							class="icon-button">
-							<img src="<?php echo valider('avatar', 'SESSION') ? valider('avatar', 'SESSION') : 'media/default-avatar.png'; ?>"
+							<img src="<?php echo valider('picture', 'SESSION') ? valider('picture', 'SESSION') : 'media/default-avatar.png'; ?>"
 								alt="Mon profil" class="profile-pic">
+						</a>
+						<a href="controleur.php?action=logout" class="icon-button" title="Se déconnecter">
+							<i class="fas fa-sign-out-alt"></i>
 						</a>
 					</div>
 				<?php else: ?>

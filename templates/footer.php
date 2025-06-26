@@ -8,17 +8,6 @@ if (basename($_SERVER["PHP_SELF"]) != "index.php") {
 
 ?>
 
-<div id="pied">
-
-	<?php
-	// Si l'utilisateur est connecte, on affiche un lien de deconnexion 
-	if (valider("connecte", "SESSION")) {
-		echo "Utilisateur <b>$_SESSION[username]</b> connecté  &nbsp; ";
-		echo "<a href=\"controleur.php?action=logout\">Se Déconnecter</a>";
-	}
-	?>
-</div>
-
 </body>
 
 </html>

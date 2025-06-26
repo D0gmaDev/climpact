@@ -62,6 +62,8 @@ $_SESSION['firstName'] = $firstName;
 $_SESSION['lastName'] = $lastName;
 $_SESSION['cursus'] = $cursus;
 
+$_SESSION['picture'] = getPictureById($idUser);
+
 // Redirection post-login
 header("Location: /index.php");
 exit;

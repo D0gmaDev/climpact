@@ -71,6 +71,13 @@ function isAdminById($idUser)
 	return SQLGetChamp($SQL) == "admin";
 }
 
+function getPictureById($idUser)
+{
+	$SQL = "SELECT picture FROM users WHERE id='$idUser'";
+	$picture = SQLGetChamp($SQL);
+	return $picture ? $picture : "media/default-profile.png";
+}
+
 function updateCursus($idUser, $cursus)
 {
 	$SQL = "UPDATE users SET cursus='$cursus' WHERE id='$idUser'";
@@ -112,6 +119,33 @@ function insertEvent($title, $content, $startTime, $endTime, $location, $image, 
 	return $idEvent;
 }
 
+function updateEvent($eventId, $title, $content, $start, $end, $location, $image)
+{
+	$SQL = "UPDATE events SET title='$title', content='$content', start_time='$start', end_time='$end', location='$location', image='$image' WHERE id='$eventId'";
+	return SQLUpdate($SQL);
+}
+
+function addOrganizerToEvent($eventId, $username)
+{
+	$user = getUserByUsername($username);
+	if (!$user) {
+		return false;
+	}
+
+	$SQL = "INSERT INTO involvements(user, event, type) VALUES(" . intval($user['id']) . ", " . intval($eventId) . ", 'orga')";
+	return SQLInsert($SQL);
+}
+
+function removeOrganizerFromEvent($eventId, $username)
+{
+	$user = getUserByUsername($username);
+	if (!$user) {
+		return false;
+	}
+
+	$SQL = "DELETE FROM involvements WHERE user = " . intval($user['id']) . " AND event = " . intval($eventId) . " AND type = 'orga'";
+	return SQLDelete($SQL);
+}
 
 function getEvents($nb = 0, $activeOnly = true, $tagIds = [], $associationIds = [])
 {
