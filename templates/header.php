@@ -127,8 +127,8 @@ $current_view = valider("view") ?: 'accueil';
 			</div>
 
 			<div class="sidebar-bottom">
-				<a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-				<a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+				<a href="https://www.instagram.com/ecolecentralelille/" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+				<a href="https://www.linkedin.com/school/centralelille/posts/?feedView=all" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
 			</div>
 		</aside>
 

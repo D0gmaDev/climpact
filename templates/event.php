@@ -61,6 +61,13 @@ if($event["author"] != $userId && !isUserInvolvedInEvent($userId, $eventId, "org
     <button type="submit">Enregistrer les modifications</button>
 </form>
 
+<form method="POST" action="controleur.php" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ? Cette action est irréversible.');" style="margin-bottom:2rem;">
+    <input type="hidden" name="action" value="deleteEvent">
+    <input type="hidden" name="eventId" value="<?php echo $event['id']; ?>">
+    <button type="submit" class="danger-button">Supprimer l’événement</button>
+</form>
+
+
 <form method="POST" action="controleur.php" class="add-organizer-form">
     <input type="hidden" name="action" value="addOrganizer">
     <input type="hidden" name="eventId" value="<?php echo $event['id']; ?>">

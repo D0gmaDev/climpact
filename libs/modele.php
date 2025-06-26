@@ -75,7 +75,7 @@ function getPictureById($idUser)
 {
 	$SQL = "SELECT picture FROM users WHERE id='$idUser'";
 	$picture = SQLGetChamp($SQL);
-	return $picture ? $picture : "media/default-profile.png";
+	return $picture ? $picture : "media/default-avatar.png";
 }
 
 function updateCursus($idUser, $cursus)
@@ -123,6 +123,12 @@ function updateEvent($eventId, $title, $content, $start, $end, $location, $image
 {
 	$SQL = "UPDATE events SET title='$title', content='$content', start_time='$start', end_time='$end', location='$location', image='$image' WHERE id='$eventId'";
 	return SQLUpdate($SQL);
+}
+
+function deleteEvent($eventId)
+{
+	$SQL = "DELETE FROM events WHERE id='$eventId'";
+	return SQLDelete($SQL);
 }
 
 function addOrganizerToEvent($eventId, $username)

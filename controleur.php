@@ -74,6 +74,25 @@ if ($action = valider("action")) {
 			}
 			break;
 
+		case 'deleteEvent':
+			if (!valider("connecte", "SESSION")) {
+				$qs = "?view=accueil&error=notconnected";
+				break;
+			}
+
+			$eventId = valider("eventId");
+			$idUser = valider("idUser", "SESSION");
+
+			if(!$eventId) {
+				$qs = "?view=accueil&error=eventidmissing";
+				break;
+			}
+
+			//todo verifier les droits
+
+			deleteEvent($eventId);
+			break;
+
 		case 'toggle_involvement':
 			if (!valider("connecte", "SESSION")) {
 				// Si l'utilisateur n'est pas connecté, on le redirige.
