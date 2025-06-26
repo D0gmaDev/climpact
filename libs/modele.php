@@ -234,6 +234,13 @@ function getUserAssociations($idUser)
 	return parcoursRs(SQLSelect($SQL));
 }
 
+function hasAssociation($idUser)
+{
+	$SQL = "SELECT COUNT(*) FROM associations WHERE admin = " . intval($idUser);
+	$count = SQLGetChamp($SQL);
+	return $count > 0;
+}
+
 function getTagById($id)
 {
 	$SQL = "SELECT * FROM tags WHERE id = " . intval($id);

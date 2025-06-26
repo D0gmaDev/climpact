@@ -68,6 +68,7 @@ if ($action = valider("action")) {
 			$newEventId = insertEvent($title, $content, $startDateTime, $endDateTime, $lieu, $image_url, $association_id, $idUser, $organizers, $tags);
 
 			if ($newEventId) {
+				$_SESSION['hasAssociation'] = true; // Mettre à jour l'état de l'utilisateur
 				$qs = "?view=event&id=" . $newEventId;
 			} else {
 				$qs = "?view=create&error=eventcreation";

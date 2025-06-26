@@ -55,6 +55,7 @@ $_SESSION['idUser'] = $idUser;
 
 $_SESSION['token'] = getTokenById($idUser);
 $_SESSION['isAdmin'] = isAdminById($idUser);
+$_SESSION['hasAssociation'] = hasAssociation($idUser);
 
 $_SESSION['username'] = $username;
 $_SESSION['firstName'] = $firstName;
