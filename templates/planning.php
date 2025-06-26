@@ -60,8 +60,8 @@ $(function() {
 
     function generateTimeAxis() {
         const $ta = $('.time-axis').empty();
-        $ta.append('<div class="time-slot" style="height:40px;"></div>');
-        for (let i = 0; i < 24; i++) {
+        $ta.append('<div class="time-slot"></div>');
+        for (let i = 7; i < 24; i++) {
             const label = moment().startOf('day').add(i, 'hours').format('HH:mm');
             $ta.append(`<div class="time-slot">${label}</div>`);
         }
@@ -73,7 +73,7 @@ $(function() {
         for (let i = 0; i < days; i++) {
             const d = moment(startDate).add(i, 'days');
             $hdr.append(`<div class="day-header">${d.format('ddd DD/MM')}</div>`);
-            $grid.append(`<div class="day-column" data-date="${d.format('YYYY-MM-DD')}" style="position:relative; min-height:${24*timeSlotHeightPx}px"></div>`);
+            $grid.append(`<div class="day-column" data-date="${d.format('YYYY-MM-DD')}" style="position:relative; min-height:${17*timeSlotHeightPx}px"></div>`);
         }
     }
 
@@ -86,8 +86,10 @@ $(function() {
             const day = s.format('YYYY-MM-DD');
             const $col = $(`.day-column[data-date="${day}"]`);
             if (!$col.length) return;
-            const top = (s.hours()*60 + s.minutes()) * pixelsPerMinute;
+            const eventMinutes = s.hours() * 60 + s.minutes();
+            const top = (eventMinutes - 420) * pixelsPerMinute; // 420 = 7 * 60
             const height = (e.diff(s, 'minutes')) * pixelsPerMinute;
+            if (top + height < 0) return; // Trop tôt, on n'affiche pas
             const $card = $('#event-template').contents().clone();
             $card.find('.event-start-time').text(s.format('HH:mm'));
             $card.find('.event-end-time').text(e.format('HH:mm'));
@@ -197,7 +199,7 @@ $(function() {
         const minutesPassed = now.diff(startOfDay, 'minutes') + 60;
 
         const headerHeight = $('.day-headers-row').outerHeight();
-        const topPosition = (minutesPassed * pixelsPerMinute);
+        const topPosition = ((minutesPassed -420) * pixelsPerMinute);
 
         const $timeLine = $('.current-time-line');
 
