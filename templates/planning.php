@@ -137,6 +137,7 @@ $(function() {
             $dayCell.on('click', function() {
                 const selectedDate = $(this).data('date');
                 currentMoment = moment(selectedDate);
+                console.log(`Navigating to week view for date: ${selectedDate}`);
                 currentView = 'week';
                 $('.view-button[data-view="week"]').click(); // Programmatically click the week button to update the view
             });
@@ -224,7 +225,6 @@ $(function() {
     });
     $('.view-button').click(function() {
         currentView = $(this).data('view');
-        currentMoment = moment();
         renderPlanning();
     });
     

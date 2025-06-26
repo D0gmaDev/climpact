@@ -1,17 +1,3 @@
-/* Variables CSS pour faciliter les modifications */
-:root {
-    --primary-color: #007bff; /* Bleu CLImpact */
-    --text-color-dark: #333;
-    --text-color-light: #666;
-    --border-color: #e0e0e0;
-    --background-light: #f9f9f9;
-    --background-white: #ffffff;
-    --header-background: #ffffff;
-    --event-background-color: #f0e6da; /* Couleur des événements sur la maquette */
-    --event-border-color: #d1b896; /* Bordure plus foncée pour les événements */
-    --time-line-color: #ff0000;
-}
-
 .current-time-line {
     position: absolute;
     left: 0;
@@ -22,13 +8,25 @@
     display: none; /* cachée par défaut */
 }
 
+/*A la fin et au début de la current-time-line on met des petits ronds */
+.current-time-line::before,
+.current-time-line::after {
+    content: '';
+    position: absolute;
+    top: -1px; /* Pour centrer le rond sur la ligne */
+    width: 6px;
+    height: 6px;
+    background-color: var(--time-line-color);
+    border-radius: 50%;
+}
+
 .planning-section {
-    font-family: 'Arial', sans-serif; /* Utilise la police de ta maquette si tu l'as */
+    font-family: 'Arial', sans-serif;
     padding: 20px;
     background-color: var(--background-light);
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    margin: 20px; /* Adapte la marge selon ton layout global */
+    margin: 20px;
 }
 
 .planning-header {
@@ -42,9 +40,6 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
-.planning-title-container {
-    flex-grow: 1; /* Permet au titre de prendre de la place */
-}
 
 .planning-title {
     font-size: 1.5em;
@@ -202,11 +197,8 @@
 .event-card {
     background-color: var(--event-background-color);
     border-left: 4px solid var(--event-border-color); /* Couleur de la bordure latérale des events */
-    padding: 5px 8px;
-    margin: 1px 3px; /* Petites marges pour l'espacement */
     border-radius: 4px;
     position: absolute; /* Positionnement absolu pour le placement basé sur l'heure */
-    width: calc(100% - 6px); /* Largeur moins les marges */
     box-sizing: border-box;
     overflow: hidden;
     cursor: pointer;
@@ -295,7 +287,7 @@
 .event-dot {
     width: 8px;
     height: 8px;
-    background-color: #2c7a7b; /* The same green color as events */
+    background-color: #2c7a7b;
     border-radius: 50%;
-    flex-shrink: 0; /* Prevent dots from shrinking */
+    flex-shrink: 0;
 }
