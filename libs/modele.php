@@ -115,62 +115,61 @@ function insertEvent($title, $content, $startTime, $endTime, $location, $image, 
 
 function getEvents($nb = 0, $activeOnly = true, $tagIds = [], $associationIds = [])
 {
-	$SQL = "SELECT E.*,
-            GROUP_CONCAT(DISTINCT T.name ORDER BY T.name SEPARATOR ',') AS tagNames,
-            GROUP_CONCAT(DISTINCT ET.tag ORDER BY ET.tag SEPARATOR ',') AS tagIds,
-            GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'orga' THEN U.username END) AS organizers,
-            GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'participant' THEN U.username END) AS participants,
-            GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'interested' THEN U.username END) AS interested
+    $SQL = "SELECT E.*,
+                   AU.username AS author_username,
+                   AU.first_name AS author_firstName, /* Ajouté */
+                   AU.last_name AS author_lastName,   /* Ajouté */
+                   AU.picture AS author_picture,
+                   GROUP_CONCAT(DISTINCT T.name ORDER BY T.name SEPARATOR ',') AS tagNames,
+                   GROUP_CONCAT(DISTINCT ET.tag ORDER BY ET.tag SEPARATOR ',') AS tagIds,
+                   GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'orga' THEN U.username END) AS organizers,
+                   GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'participant' THEN U.username END) AS participants,
+                   GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'interested' THEN U.username END) AS interested
             FROM events E
+            LEFT JOIN users AU ON E.author = AU.id
             LEFT JOIN event_tags ET ON E.id = ET.event
             LEFT JOIN tags T ON ET.tag = T.id
             LEFT JOIN involvements I ON E.id = I.event
             LEFT JOIN users U ON I.user = U.id";
 
-	$conditions = [];
+    $conditions = [];
 
-	if ($activeOnly) {
-		$conditions[] = "E.end_time >= NOW()";
-	}
+    if ($activeOnly) {
+        $conditions[] = "E.end_time >= NOW()";
+    }
 
-	// Filter by tag IDs
-	if (!empty($tagIds)) {
-		// Ensure tagIds are integers for security
-		$tagIds = array_map('intval', $tagIds);
-		// Utilise IN pour filtrer par les tags sélectionnés
-		$conditions[] = "E.id IN (SELECT event FROM event_tags WHERE tag IN (" . implode(',', $tagIds) . "))";
-	}
+    if (!empty($tagIds)) {
+        $tagIds = array_map('intval', $tagIds);
+        $conditions[] = "E.id IN (SELECT event FROM event_tags WHERE tag IN (" . implode(',', $tagIds) . "))";
+    }
 
-	// Filter by association IDs
-	if (!empty($associationIds)) {
-		// Ensure associationIds are integers for security
-		$associationIds = array_map('intval', $associationIds);
-		$conditions[] = "E.association IN (" . implode(',', $associationIds) . ")";
-	}
+    if (!empty($associationIds)) {
+        $associationIds = array_map('intval', $associationIds);
+        $conditions[] = "E.association IN (" . implode(',', $associationIds) . ")";
+    }
 
-	if (!empty($conditions)) {
-		$SQL .= " WHERE " . implode(' AND ', $conditions);
-	}
+    if (!empty($conditions)) {
+        $SQL .= " WHERE " . implode(' AND ', $conditions);
+    }
 
-	$SQL .= " GROUP BY E.id";
-	$SQL .= " ORDER BY E.start_time ASC";
+    $SQL .= " GROUP BY E.id";
+    $SQL .= " ORDER BY E.start_time ASC";
 
-	if ($nb > 0) {
-		$SQL .= " LIMIT $nb";
-	}
+    if ($nb > 0) {
+        $SQL .= " LIMIT $nb";
+    }
 
-	$result = parcoursRs(SQLSelect($SQL));
+    $result = parcoursRs(SQLSelect($SQL));
 
-	foreach ($result as &$event) {
-		// Assurez-vous que les clés existent avant d'appeler explode
-		$event['organizers'] = isset($event['organizers']) && $event['organizers'] ? explode(',', $event['organizers']) : [];
-		$event['participants'] = isset($event['participants']) && $event['participants'] ? explode(',', $event['participants']) : [];
-		$event['interested'] = isset($event['interested']) && $event['interested'] ? explode(',', $event['interested']) : [];
-		$event['tagIds'] = isset($event['tagIds']) && $event['tagIds'] ? explode(',', $event['tagIds']) : [];
-		$event['tagNames'] = isset($event['tagNames']) && $event['tagNames'] ? explode(',', $event['tagNames']) : [];
-	}
+    foreach ($result as &$event) {
+        $event['organizers'] = isset($event['organizers']) && $event['organizers'] ? explode(',', $event['organizers']) : [];
+        $event['participants'] = isset($event['participants']) && $event['participants'] ? explode(',', $event['participants']) : [];
+        $event['interested'] = isset($event['interested']) && $event['interested'] ? explode(',', $event['interested']) : [];
+        $event['tagIds'] = isset($event['tagIds']) && $event['tagIds'] ? explode(',', $event['tagIds']) : [];
+        $event['tagNames'] = isset($event['tagNames']) && $event['tagNames'] ? explode(',', $event['tagNames']) : [];
+    }
 
-	return $result;
+    return $result;
 }
 
 function getFutureEvents($limit = 10)
@@ -277,6 +276,13 @@ function getUserEventInvolvementIds($idUser, $type = "participate")
 {
 	$SQL = "SELECT event FROM involvements WHERE user = '$idUser' AND type = '$type'";
 	return parcoursRs(SQLSelect($SQL));
+}
+
+function getInvolvementStatus($idUser, $idEvent)
+{
+    // Important: Assuming only one of 'interested' or 'participate' exists per user/event
+    $SQL = "SELECT type FROM involvements WHERE user = " . intval($idUser) . " AND event = " . intval($idEvent) . " AND (type = 'interested' OR type = 'participate')";
+    return SQLGetChamp($SQL); // This will return the 'type' string ('interested' or 'participate') or false if not found
 }
 
 function isUserInvolvedInEvent($idUser, $idEvent, $type = "participate")

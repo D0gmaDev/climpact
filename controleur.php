@@ -74,6 +74,46 @@ if ($action = valider("action")) {
 				$qs = "?view=create&error=eventcreation";
 			}
 			break;
+		
+		case 'toggle_involvement':
+            if (!valider("connecte", "SESSION")) {
+                // Si l'utilisateur n'est pas connecté, on le redirige.
+                // L'affichage des boutons sera géré côté vue (accueil.php ou event.php)
+                // pour ne pas les montrer si l'utilisateur n'est pas connecté.
+                $qs = "?view=accueil&error=notconnected"; // Ou la vue d'origine
+                break;
+            }
+
+            $idUser = valider("idUser", "SESSION");
+            $idEvent = valider("idEvent");
+            $newType = valider("type"); // Le type d'implication souhaité ('interested' ou 'participate')
+            $redirect_view = valider("redirect_view") ?: "accueil"; // Vue vers laquelle rediriger après l'action
+
+            if (empty($idEvent) || empty($newType) || !in_array($newType, ['interested', 'participate'])) {
+                $qs = "?view=$redirect_view&error=missinginvolvementdata";
+                break;
+            }
+
+            // Récupérer l'implication actuelle de l'utilisateur pour cet événement (interested ou participate)
+            $currentInvolvement = getInvolvementStatus($idUser, $idEvent);
+
+            if ($currentInvolvement == $newType) {
+                // L'utilisateur est déjà impliqué avec le type souhaité, on annule l'implication
+                deleteInvolvement($idUser, $idEvent, $newType);
+                $qs = "?view=$redirect_view&success=involvementremoved";
+            } else {
+                // L'utilisateur n'est pas impliqué avec ce type, ou est impliqué avec l'autre type mutuellement exclusif
+
+                // 1. Si une implication existait (interested ou participate), la supprimer d'abord
+                if ($currentInvolvement) {
+                    deleteInvolvement($idUser, $idEvent, $currentInvolvement);
+                }
+
+                // 2. Insérer la nouvelle implication
+                insertInvolvement($idUser, $idEvent, $newType);
+                $qs = "?view=$redirect_view&success=involvementadded"; // Ou updated si on a supprimé avant
+            }
+            break;
 	}
 }
 
