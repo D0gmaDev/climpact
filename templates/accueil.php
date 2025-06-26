@@ -7,17 +7,13 @@ include_once("libs/modele.php");
 <div class="container">
     <h1>Fil d'Actualité DD & RS</h1>
 
-    <!-- Filtres -->
-    <form id="filterForm">
-        <label for="tagSelect">Filtrer par tags :</label>
-        <select name="tags[]" id="tagSelect" multiple>
-            <?php foreach (getTags() as $tag): ?>
-                <option value="<?= htmlspecialchars($tag['id']) ?>"><?= htmlspecialchars($tag['name']) ?></option>
-            <?php endforeach; ?>
-        </select>
-        <button type="button" id="resetFilterBtn">Réinitialiser</button>
-    </form>
-    <div id="selectedTagsDisplay" style="margin-top: 10px;"></div>
+    <div id="tagButtons">
+        <?php foreach (getTags() as $tag): ?>
+            <button class="tag-toggle-btn" data-id="<?= htmlspecialchars($tag['id']) ?>">
+                <?= htmlspecialchars($tag['name']) ?>
+            </button>
+        <?php endforeach; ?>
+    </div>
 
     <!-- Résultats dynamiques -->
     <h2>Événements à venir</h2>
@@ -29,42 +25,33 @@ include_once("libs/modele.php");
 
 <link rel="stylesheet" href="css/accueil.css" />
 
-<!-- jQuery et JS custom -->
+<!-- jQuery et JS custom -->Z
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 
     const currentUsername = <?= valider("connecte", "SESSION") ? json_encode($_SESSION["username"]) : 'null' ?>;
 
     $(function () {
-        updateSelectedTags();
-        fetchEvents(); // Chargement initial
 
-        $("#tagSelect").change(function () {
-            updateSelectedTags();
-            fetchEvents();
-        });
+        let selectedTags = [];
 
-        $("#resetFilterBtn").click(function () {
-            $("#tagSelect option").prop("selected", false);
-            updateSelectedTags();
-            fetchEvents();
-        });
+        $("#tagButtons").on("click", ".tag-toggle-btn", function () {
+            const id = $(this).data("id").toString();
+            $(this).toggleClass("active");
 
-        function updateSelectedTags() {
-            let selected = $("#tagSelect option:selected").map(function () {
-                return $(this).text();
-            }).get();
-
-            if (selected.length > 0) {
-                $("#selectedTagsDisplay").html("<strong>Tags sélectionnés :</strong> " + selected.join(", "));
+            if ($(this).hasClass("active")) {
+                selectedTags.push(id);
             } else {
-                $("#selectedTagsDisplay").empty();
+                selectedTags = selectedTags.filter(t => t !== id);
             }
-        }
+
+            fetchEvents();
+        });
+
+        fetchEvents();
 
         function fetchEvents() {
-            let selectedTags = $("#tagSelect").val() || [];
-
+            console.log("Fetching events with tags:", selectedTags);
             $.ajax({
                 url: "api.php",
                 method: "POST",
@@ -108,23 +95,24 @@ include_once("libs/modele.php");
                     `</div>` : "";
 
                 let html = `
-<div class="event" data-event-id="${event.id}">
-    <div class="event-author">
-        <a href="index.php?view=user&username=${encodeURIComponent(event.author_username)}">
+<div class="event ${event.image ? 'has-background' : ''}" 
+     data-event-id="${event.id}" 
+     style="${event.image ? `--event-bg: url('${event.image}')` : ''}">
+    <h3>${event.title}</h3>
+    <div class="event-meta">
+        <span class="event-association">${event.association_name || 'Association'}</span>
+        <span class="separator">|</span>
+        <a href="index.php?view=user&username=${encodeURIComponent(event.author_username)}" class="event-author-link">
             <img src="${event.author_picture || 'media/default-avatar.png'}" alt="Photo de ${event.author_firstName}">
-            <strong>${event.author_firstName} ${event.author_lastName}</strong>
+            <span class="event-author-name">${event.author_firstName} ${event.author_lastName}</span>
         </a>
     </div>
-    
-    <h3>${event.title}</h3>
+
     ${tagsHtml}
     <p>${event.content}</p>
     
-    <p><strong>Début :</strong> ${new Date(event.start_time).toLocaleString('fr-FR')}</p>
-    <p><strong>Fin :</strong> ${new Date(event.end_time).toLocaleString('fr-FR')}</p>
+    <p><strong>Date :</strong> ${new Date(event.start_time).toLocaleString('fr-FR')}</p>
     <p><strong>Lieu :</strong> ${event.location}</p>
-    
-    ${event.image ? `<img src="${event.image}" class="event-image" alt="Image de l'événement">` : ""}
 `;
 
                 if (currentUsername) {
@@ -154,8 +142,9 @@ include_once("libs/modele.php");
                 $.post("api.php", { request: "toggle_interest", event_id: eventId }, function (res) {
                     const interested = res["new_interested"];
                     $btn.text(interested ? "Ne plus être intéressé" : "Intéressé");
-                    $btn.toggleClass("active", interested); // On bascule la classe
-                    // Plus besoin de gérer le style en JS !
+                    $btn.toggleClass("active", interested);
+                    $btn.trigger("mouseleave");
+                    $btn.trigger("mouseenter");
                 });
             });
 
@@ -167,7 +156,9 @@ include_once("libs/modele.php");
                 $.post("api.php", { request: "toggle_participation", event_id: eventId }, function (res) {
                     const participate = res["new_participate"];
                     $btn.text(participate ? "Ne plus participer" : "Je participe");
-                    $btn.toggleClass("active", participate); // On bascule la classe
+                    $btn.toggleClass("active", participate);
+                    $btn.trigger("mouseleave");
+                    $btn.trigger("mouseenter");
                 });
             });
 

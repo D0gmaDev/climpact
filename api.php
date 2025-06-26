@@ -63,7 +63,7 @@ switch ($entity) {
     case "fetch_events":
         $selectedTagIds = isset($_POST['tags']) ? array_map('intval', $_POST['tags']) : [];
 
-        $allEvents = getEvents($activeOnly = true, $tagIds = $selectedTagIds);
+        $allEvents = getEvents(0, false, $selectedTagIds);
 
         $now = date('Y-m-d H:i:s');
         $upcoming = array_filter($allEvents, fn($e) => $e['start_time'] > $now);

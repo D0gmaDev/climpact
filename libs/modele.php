@@ -120,6 +120,7 @@ function getEvents($nb = 0, $activeOnly = true, $tagIds = [], $associationIds = 
                    AU.first_name AS author_firstName,
                    AU.last_name AS author_lastName,
                    AU.picture AS author_picture,
+				   ASS.name AS association_name,
                    GROUP_CONCAT(DISTINCT T.name ORDER BY T.name SEPARATOR ',') AS tagNames,
                    GROUP_CONCAT(DISTINCT ET.tag ORDER BY ET.tag SEPARATOR ',') AS tagIds,
                    GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'orga' THEN U.username END) AS organizers,
@@ -130,6 +131,7 @@ function getEvents($nb = 0, $activeOnly = true, $tagIds = [], $associationIds = 
             LEFT JOIN event_tags ET ON E.id = ET.event
             LEFT JOIN tags T ON ET.tag = T.id
             LEFT JOIN involvements I ON E.id = I.event
+			LEFT JOIN associations ASS ON E.association = ASS.id
             LEFT JOIN users U ON I.user = U.id";
 
 	$conditions = [];

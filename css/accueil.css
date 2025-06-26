@@ -104,6 +104,40 @@
     color: var(--primary-color);
 }
 
+.event-meta {
+    display: flex;
+    align-items: center;
+    font-size: 0.85em;
+    color: var(--text-color-light);
+    margin-bottom: 12px;
+    gap: 8px;
+}
+
+.event-meta .event-association {
+    font-weight: 500;
+}
+
+.event-meta .separator {
+    opacity: 0.6;
+}
+
+.event-meta .event-author-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.event-meta .event-author-link img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.event-meta .event-author-name {
+    font-weight: 500;
+}
 
 .event h3 {
     margin: 0 0 10px 0;
@@ -154,14 +188,15 @@
 
 .event .btn-interesse,
 .event .btn-participe {
-    flex-grow: 1; /* Les boutons prennent la même largeur */
-    padding: 12px;
+    padding: 8px 12px;
     border-radius: 8px;
     border: none;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     font-size: 0.95em;
+    display: inline-flex;
+    align-items: center;
 }
 
 /* Style par défaut des boutons */
@@ -191,6 +226,32 @@
     background-color: #226d3d;
 }
 
+.event.has-background {
+    position: relative;
+    overflow: hidden;
+}
+
+.event.has-background::before {
+    content: "";
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background-image: var(--event-bg);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.2;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.event.has-background > * {
+    position: relative;
+    z-index: 1;
+}
+
+
 /* --- Pop-up d'information au survol (Hover Info Box) --- */
 .hover-info-box {
     background: var(--text-color-dark) !important;
@@ -208,4 +269,27 @@
 
 .hover-info-box em {
     color: #aaa;
+}
+
+#tagButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag-toggle-btn {
+  background-color: var(--background-white);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9em;
+  color: var(--text-color-dark);
+}
+
+.tag-toggle-btn.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
 }
