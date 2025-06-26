@@ -14,15 +14,15 @@ include_once("libs/maLibForms.php"); // mkTable, mkSelect
 
 $user = getUserByUsername(valider("username"));
 
-$usereEventParticipationId = getUserEventInvolvementIds($user['id'], $type = "participate")
-$usereEventInterestId = getUserEventInvolvementIds($user['id'], $type = "interested")
+$userEventParticipationId = getUserEventInvolvementIds($user['id'], $type = "participate");
+$userEventInterestId = getUserEventInvolvementIds($user['id'], $type = "interested");
 
 
 
 
 $userEvents = [];
 
-foreach ($usereEventParticipationId as $id) {
+foreach ($userEventParticipationId as $id) {
     $userEvents[] = getEvent($id);
 }
 
@@ -30,7 +30,7 @@ $userBadges = getUserBadges($user['id']) ?? [];
 
 $userInterests = [];
 
-foreach ($usereEventInterestId as $id) {
+foreach ($userEventInterestId as $id) {
     $userInterests[] = getEvent($id);
 }
 
