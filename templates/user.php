@@ -40,6 +40,8 @@ foreach ($userEventOrganizationId as $id) {
     $userOrga[] = getEvent($id);
 }
 
+tprint($userParticipate);
+
 ?>
 
 <style>
