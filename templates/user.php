@@ -349,7 +349,7 @@ foreach ($userEventInterestId as $id) {
                         <div class="event-item">
                             <div class="event-info">
                                 <h4><?php echo htmlspecialchars($event['title']); ?></h4>
-                                <div class="event-date"><?php echo date('d/m/Y', strtotime($event['date'])); ?></div>
+                                <div class="event-date"><?php echo date('d/m/Y', strtotime($event['start_time'])); ?></div>
                             </div>
                             <div class="event-type">Participé</div>
                         </div>
@@ -373,7 +373,7 @@ foreach ($userEventInterestId as $id) {
                         <div class="event-item">
                             <div class="event-info">
                                 <h4><?php echo htmlspecialchars($event['title']); ?></h4>
-                                <div class="event-date"><?php echo date('d/m/Y', strtotime($event['date'])); ?></div>
+                                <div class="event-date"><?php echo date('d/m/Y', strtotime($event['start_time'])); ?></div>
                             </div>
                             <div class="event-type organized">Organisé</div>
                         </div>
@@ -397,7 +397,7 @@ foreach ($userEventInterestId as $id) {
                         <div class="event-item">
                             <div class="event-info">
                                 <h4><?php echo htmlspecialchars($event['title']); ?></h4>
-                                <div class="event-date"><?php echo date('d/m/Y', strtotime($event['startDate'])); ?></div>
+                                <div class="event-date"><?php echo date('d/m/Y', strtotime($event['start_time'])); ?></div>
                             </div>
                             <div class="event-type">Intéressé</div>
                         </div>
