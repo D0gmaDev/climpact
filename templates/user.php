@@ -322,7 +322,7 @@ foreach ($userEventOrganizationId as $id) {
                 <?php
                 // Définition des badges disponibles
                 $availableBadges = [
-                    'nouveau' => ['icon' => '🎯', 'name' => 'Nouveau venu', 'desc' => 'C\'est parti pour l\'engagement !'],
+                    'newcomer' => ['icon' => '🎯', 'name' => 'Nouveau venu', 'desc' => 'C\'est parti pour l\'engagement !'],
                     'curieux' => ['icon' => '🧩', 'name' => 'Curieux.se', 'desc' => 'Toujours à l\'affût des bonnes initiatives.'],
                     'actif' => ['icon' => '💬', 'name' => 'Actif.ve', 'desc' => 'Engagé.e dans l\'action !'],
                     'super' => ['icon' => '💥', 'name' => 'Super participant.e', 'desc' => 'Pilier des événements CLimpact.'],
