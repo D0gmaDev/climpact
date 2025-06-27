@@ -16,13 +16,14 @@ $user = getUserByUsername(valider("username"));
 
 $userEventParticipationId = getUserEventInvolvementIds($user['id'], $type = "participate");
 $userEventInterestId = getUserEventInvolvementIds($user['id'], $type = "interested");
+$userEventOrganizationId = getUserEventInvolvementIds($user['id'], $type = "organize");
 
 
 
-$userEvents = [];
+$userParticipation = [];
 
 foreach ($userEventParticipationId as $id) {
-    $userEvents[] = getEvent($id);
+    $userParticipation[] = getEvent($id);
 }
 
 $userBadges = getUserBadges($user['id']) ?? [];
@@ -31,6 +32,12 @@ $userInterests = [];
 
 foreach ($userEventInterestId as $id) {
     $userInterests[] = getEvent($id);
+}
+
+$userOrga = [];
+
+foreach ($userEventOrgaizationId as $id) {
+    $userOrga[] = getEvent($id);
 }
 
 ?>
@@ -337,7 +344,7 @@ foreach ($userEventInterestId as $id) {
         <div class="section">
             <h3>📅 Événements auxquels j'ai participé</h3>
             <div class="event-list">
-                <?php if (empty($userEvents['participated'])): ?>
+                <?php if (empty($userParticipate['participated'])): ?>
                     <div class="event-item">
                         <div class="event-info">
                             <h4>Aucun événement</h4>
@@ -345,7 +352,7 @@ foreach ($userEventInterestId as $id) {
                         </div>
                     </div>
                 <?php else: ?>
-                    <?php foreach ($userEvents['participated'] as $event): ?>
+                    <?php foreach ($userParticipate['participated'] as $event): ?>
                         <div class="event-item">
                             <div class="event-info">
                                 <h4><?php echo htmlspecialchars($event['title']); ?></h4>
@@ -361,7 +368,7 @@ foreach ($userEventInterestId as $id) {
         <div class="section">
             <h3>📝 Événements que j'ai organisés</h3>
             <div class="event-list">
-                <?php if (empty($userEvents['organized'])): ?>
+                <?php if (empty($userOrga['organized'])): ?>
                     <div class="event-item">
                         <div class="event-info">
                             <h4>Aucun événement organisé</h4>
@@ -369,7 +376,7 @@ foreach ($userEventInterestId as $id) {
                         </div>
                     </div>
                 <?php else: ?>
-                    <?php foreach ($userEvents['organized'] as $event): ?>
+                    <?php foreach ($userOrga['organized'] as $event): ?>
                         <div class="event-item">
                             <div class="event-info">
                                 <h4><?php echo htmlspecialchars($event['title']); ?></h4>
