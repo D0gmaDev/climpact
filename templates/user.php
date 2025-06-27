@@ -352,6 +352,7 @@ foreach ($userEventOrganizationId as $id) {
                         </div>
                     </div>
                 <?php else: ?>
+                    <?php tprint($userParticipate)?>
                     <?php foreach ($userParticipate as $event): ?>
                         <div class="event-item">
                             <div class="event-info">
@@ -400,6 +401,7 @@ foreach ($userEventOrganizationId as $id) {
                         </div>
                     </div>
                 <?php else: ?>
+                    <?php tprint($userInterests)?>
                     <?php foreach ($userInterests as $event): ?>
                         <div class="event-item">
                             <div class="event-info">
@@ -445,7 +447,7 @@ const badgeData = {
     nouveau: {
         icon: '🎯',
         name: 'Nouveau venu',
-        description: 'C\'est parti pour l\'engagement !',
+        description: 'C\'est parti !',
         criteria: 'Première connexion à CLimpact',
         percentage: '100%'
     },
@@ -489,13 +491,15 @@ const badgeData = {
 const userBadges = <?php echo json_encode($userBadges); ?>;
 
 // Gestion des thèmes
+
+// franchement on règlera ça plus tard
 function changeTheme(theme) {
     document.querySelectorAll('.theme-option').forEach(option => {
         option.classList.remove('active');
     });
     document.querySelector(`.theme-option.${theme}`).classList.add('active');
     
-    // Ici vous pourriez faire un appel AJAX pour sauvegarder le thème
+    // Ici  faire un appel AJAX pour sauvegarder le thème
     console.log('Thème changé vers:', theme);
 }
 
@@ -526,25 +530,13 @@ function previewPhoto() {
 function savePhoto() {
     const input = document.getElementById('photoInput');
     if (input.files && input.files[0]) {
-        // Ici vous devriez faire un appel AJAX pour sauvegarder la photo
+        // Ici faire un appel AJAX pour sauvegarder la photo
         const formData = new FormData();
         formData.append('profilePhoto', input.files[0]);
         
-        // Exemple d'appel AJAX (à adapter selon votre API)
-        /*
-        fetch('ajax/updatePhoto.php', {
-            method: 'POST',
-            body: formData
-        }).then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                document.getElementById('profileImg').src = data.photoUrl;
-                closePhotoModal();
-            }
-        });
-        */
+        // code à fair quand on a le temps
         
-        // Pour la démo, on met à jour directement l'image
+        // Pour la démo, on màj directement de l'image
         const reader = new FileReader();
         reader.onload = function(e) {
             document.getElementById('profileImg').src = e.target.result;
