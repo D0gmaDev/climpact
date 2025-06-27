@@ -27,6 +27,7 @@ foreach ($userEventParticipationId as $id) {
 }
 
 $userBadges = getUserBadges($user['id']) ?? [];
+tprint($userBadges);
 
 $userInterests = [];
 
