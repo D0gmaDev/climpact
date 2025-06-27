@@ -95,38 +95,49 @@ include_once("libs/modele.php");
                     `</div>` : "";
 
                 let html = `
-<div class="event ${event.image ? 'has-background' : ''}" 
-     data-event-id="${event.id}" 
-     style="${event.image ? `--event-bg: url('${event.image}')` : ''}">
-    <h3>${event.title}</h3>
-    <div class="event-meta">
-        <span class="event-association">${event.association_name || 'Association'}</span>
-        <span class="separator">|</span>
-        <a href="index.php?view=user&username=${encodeURIComponent(event.author_username)}" class="event-author-link">
-            <img src="${event.author_picture || 'media/default-avatar.png'}" alt="Photo de ${event.author_firstName}">
-            <span class="event-author-name">${event.author_firstName} ${event.author_lastName}</span>
-        </a>
-    </div>
+                <div class="event ${event.image ? 'has-background' : ''}" 
+                    data-event-id="${event.id}" 
+                    style="${event.image ? `--event-bg: url('${event.image}')` : ''}">
+                    <h3>${event.title}</h3>
+                    <div class="event-meta">
+                        <span class="event-association">${event.association_name || 'Association'}</span>
+                        <span class="separator">|</span>
+                        <a href="index.php?view=user&username=${encodeURIComponent(event.author_username)}" class="event-author-link">
+                            <img src="${event.author_picture || 'media/default-avatar.png'}" alt="Photo de ${event.author_firstName}">
+                            <span class="event-author-name">${event.author_firstName} ${event.author_lastName}</span>
+                        </a>
+                    </div>
 
-    ${tagsHtml}
-    <p>${event.content}</p>
-    
-    <p><strong>Date :</strong> ${new Date(event.start_time).toLocaleString('fr-FR')}</p>
-    <p><strong>Lieu :</strong> ${event.location}</p>
-`;
+                    ${tagsHtml}
+                    <p>${event.content}</p>
+                    
+                    <p><strong>Date :</strong> ${new Date(event.start_time).toLocaleString('fr-FR')}</p>
+                    <p><strong>Lieu :</strong> ${event.location}</p>
+                `;
 
                 if (currentUsername) {
                     // On utilise les classes 'active' pour gérer le style
                     html += `
-    <div class="actions">
-        <button class="btn-interesse ${interestedClass}" ${$disabled ? "disabled" : ""} data-id="${event.id}">
-            ${isInterested ? "Ne plus être intéressé" : "Intéressé"}
-        </button>
-        <button class="btn-participe ${participatingClass}" ${$disabled ? "disabled" : ""} data-id="${event.id}">
-            ${isParticipating ? "Ne plus participer" : "Je participe"}
-        </button>
-    </div>
-`;
+                        <div class="actions">
+                            <button class="btn-interesse ${interestedClass}" ${$disabled ? "disabled" : ""} data-id="${event.id}">
+                                ${isInterested ? "Ne plus être intéressé" : "Intéressé"}
+                            </button>
+                            <button class="btn-participe ${participatingClass}" ${$disabled ? "disabled" : ""} data-id="${event.id}">
+                                ${isParticipating ? "Ne plus participer" : "Je participe"}
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                    <div class="actions">
+                        <button class="btn-interesse ${interestedClass}" disabled data-id="${event.id}">
+                            ${isInterested ? "Ne plus être intéressé" : "Intéressé"}
+                        </button>
+                        <button class="btn-participe ${participatingClass}" disabled data-id="${event.id}">
+                            ${isParticipating ? "Ne plus participer" : "Je participe"}
+                        </button>
+                    </div>
+                `;
                 }
 
                 html += `</div>`;

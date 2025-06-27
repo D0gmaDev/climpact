@@ -291,3 +291,270 @@
     border-radius: 50%;
     flex-shrink: 0;
 }
+
+/* --- Popup --- */
+
+#popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px;
+    z-index: 1000;
+    background: white; /* à adapter */
+    border-radius: 12px; /* pour un effet sympa */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    max-width: 90vw; /* ou une taille max */
+    max-height: 90vh;
+    overflow-y: auto; /* si le contenu est grand */
+  }
+
+#closePopup {
+position: absolute; /* pour la placer en haut à droite */
+top: 10px;
+right: 10px;
+background: transparent;
+border: none;
+font-size: 1.3em;
+cursor: pointer;
+color: #555;
+z-index: 1100; /* plus haut que la popup */
+transition: color 0.3s ease;
+}
+
+#closePopup:hover {
+color: #d33; /* rouge quand on survole */
+}
+  
+/* Carte dans le popup */
+.event {
+    background-color: var(--background-white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 25px;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.event:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+.event-author {
+    margin-bottom: 15px;
+}
+
+.event-author a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-color-dark);
+}
+
+.event-author img {
+    width: 45px !important; /* Forcer la taille si besoin */
+    height: 45px !important;
+    border-radius: 50%;
+    margin-right: 12px;
+    border: 2px solid var(--border-color);
+}
+
+.event-author strong {
+    font-weight: 600;
+    font-size: 1.1em;
+    transition: color 0.2s;
+}
+
+.event-author a:hover strong {
+    color: var(--primary-color);
+}
+
+.event-meta {
+    display: flex;
+    align-items: center;
+    font-size: 0.85em;
+    color: var(--text-color-light);
+    margin-bottom: 12px;
+    gap: 8px;
+}
+
+.event-meta .event-association {
+    font-weight: 500;
+}
+
+.event-meta .separator {
+    opacity: 0.6;
+}
+
+.event-meta .event-author-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.event-meta .event-author-link img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.event-meta .event-author-name {
+    font-weight: 500;
+}
+
+.event h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.6em;
+    color: var(--text-color-dark);
+}
+
+.event p {
+    margin: 4px 0 12px 0;
+    color: var(--text-color-light);
+    line-height: 1.6;
+}
+
+.event p strong {
+    color: var(--text-color-dark);
+}
+
+.event .event-image { /* Ajout d'une classe pour mieux cibler */
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.event .tags-list { /* Ajout d'une classe pour les tags */
+    margin-bottom: 15px;
+}
+
+.event .tags-list span {
+    display: inline-block;
+    background-color: var(--active-bg);
+    color: var(--primary-color);
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.85em;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+/* --- Boutons d'action dans les cartes --- */
+.event .actions { /* Ajout d'une classe conteneur */
+    margin-top: auto; /* Pousse les boutons en bas de la carte */
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 10px;
+}
+
+.event .btn-interesse,
+.event .btn-participe {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-size: 0.95em;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Style par défaut des boutons */
+.event .btn-interesse,
+.event .btn-participe {
+    background-color: var(--light-grey);
+    color: var(--text-color-dark);
+}
+.event .btn-interesse:hover,
+.event .btn-participe:hover {
+    filter: brightness(95%);
+}
+
+.event .btn-interesse.active {
+    background-color: #ffc107;
+    color: #333;
+}
+.event .btn-interesse.active:hover {
+    background-color: #e0a800;
+}
+
+.event .btn-participe.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+.event .btn-participe.active:hover {
+    background-color: #226d3d;
+}
+
+.event.has-background {
+    position: relative;
+    overflow: hidden;
+}
+
+.event.has-background::before {
+    content: "";
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background-image: var(--event-bg);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.2;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.event.has-background > * {
+    position: relative;
+    z-index: 1;
+}
+
+
+/* --- Pop-up d'information au survol (Hover Info Box) --- */
+.hover-info-box {
+    background: var(--text-color-dark) !important;
+    color: white;
+    border: none !important;
+    border-radius: 8px;
+    padding: 10px !important;
+    font-size: 0.9em !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.hover-info-box div {
+    padding: 2px 0;
+}
+
+.hover-info-box em {
+    color: #aaa;
+}
+
+#tagButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag-toggle-btn {
+  background-color: var(--background-white);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9em;
+  color: var(--text-color-dark);
+}
+
+.tag-toggle-btn.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}

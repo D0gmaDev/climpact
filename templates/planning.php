@@ -51,6 +51,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/fr.min.js"></script>
 
 <script>
+    const currentUsername = <?= valider("connecte", "SESSION") ? json_encode($_SESSION["username"]) : 'null' ?>;
+
 $(function() {
     moment.locale('fr');
     let currentMoment = moment();
@@ -91,6 +93,7 @@ $(function() {
             const height = (e.diff(s, 'minutes')) * pixelsPerMinute;
             if (top + height < 0) return; // Trop tôt, on n'affiche pas
             const $card = $('#event-template').contents().clone();
+            $card.attr('data-event-id', ev.id);
             $card.find('.event-start-time').text(s.format('HH:mm'));
             $card.find('.event-end-time').text(e.format('HH:mm'));
             $card.find('.event-title').text(ev.title);
@@ -101,7 +104,169 @@ $(function() {
         });
     }
 
+    // Fonction pour le rendu de l'event depuis le popup 
+
+    function renderSingleEvent(event, $disabled = false) {
+        const $container = $("#event");
+        $container.empty();
+
+        const isInterested = currentUsername && event.interested.includes(currentUsername);
+        const isParticipating = currentUsername && event.participants.includes(currentUsername);
+        const interestedClass = isInterested ? 'active' : '';
+        const participatingClass = isParticipating ? 'active' : '';
+
+        let tagsHtml = event.tagNames && event.tagNames.length > 0 ?
+            `<div class="tags-list">` +
+            event.tagNames.map(tag => `<span>${tag}</span>`).join('') +
+            `</div>` : "";
+
+        let html = `
+        <div class="event ${event.image ? 'has-background' : ''}" 
+            data-event-id="${event.id}" 
+            style="${event.image ? `--event-bg: url('${event.image}')` : ''}">
+            <h3>${event.title}</h3>
+            <div class="event-meta">
+                <span class="event-association">${event.association_name || 'Association'}</span>
+                <span class="separator">|</span>
+                <a href="index.php?view=user&username=${encodeURIComponent(event.author_username)}" class="event-author-link">
+                    <img src="${event.author_picture || 'media/default-avatar.png'}" alt="Photo de ${event.author_firstName}">
+                    <span class="event-author-name">${event.author_firstName} ${event.author_lastName}</span>
+                </a>
+            </div>
+
+            ${tagsHtml}
+            <p>${event.content}</p>
+            <p><strong>Date :</strong> ${new Date(event.start_time).toLocaleString('fr-FR')}</p>
+            <p><strong>Lieu :</strong> ${event.location}</p>
+            <div class="actions">
+                <button class="btn-interesse ${interestedClass}" ${$disabled ? "disabled" : ""} data-id="${event.id}">
+                    ${isInterested ? "Ne plus être intéressé" : "Intéressé"}
+                </button>
+                <button class="btn-participe ${participatingClass}" ${$disabled ? "disabled" : ""} data-id="${event.id}">
+                    ${isParticipating ? "Ne plus participer" : "Je participe"}
+                </button>
+            </div>
+        </div>`;
+
+        $container.append(html);
+
+        // Gestion des clics
+        $(".btn-interesse").off("click").on("click", function () {
+            const $btn = $(this);
+            const eventId = $btn.data("id");
+
+            $.post("api.php", { request: "toggle_interest", event_id: eventId }, function (res) {
+                const interested = res["new_interested"];
+                $btn.text(interested ? "Ne plus être intéressé" : "Intéressé");
+                $btn.toggleClass("active", interested);
+                $btn.trigger("mouseleave").trigger("mouseenter");
+            });
+        });
+
+        $(".btn-participe").off("click").on("click", function () {
+            const $btn = $(this);
+            const eventId = $btn.data("id");
+
+            $.post("api.php", { request: "toggle_participation", event_id: eventId }, function (res) {
+                const participate = res["new_participate"];
+                $btn.text(participate ? "Ne plus participer" : "Je participe");
+                $btn.toggleClass("active", participate);
+                $btn.trigger("mouseleave").trigger("mouseenter");
+            });
+        });
+
+        // Hover info box
+        function createHoverInfo(users, max = 5) {
+            if (!users || users.length === 0) {
+                return "<div class='hover-info-box'><em>Aucun</em></div>";
+            }
+
+            let html = "<div class='hover-info-box'>";
+            users.slice(0, max).forEach(user => {
+                html += `<div>${user.firstName} ${user.lastName}</div>`;
+            });
+            if (users.length > max) {
+                html += `<div><em>et ${users.length - max} autres</em></div>`;
+            }
+            html += "</div>";
+            return html;
+        }
+
+        $(".btn-participe").off("mouseenter mouseleave")
+            .on("mouseenter", function () {
+                const $btn = $(this);
+                const eventId = $btn.data("id");
+
+                if ($btn.data("hover-loaded")) return;
+                $btn.data("hover-loaded", true);
+
+                $.post("api.php", { request: "get_participants", event_id: eventId }, function (res) {
+                    const html = createHoverInfo(res.participants);
+                    const $info = $(html).css({
+                        position: "absolute",
+                        background: "#f0f0f0",
+                        border: "1px solid #ccc",
+                        padding: "5px",
+                        fontSize: "0.9em",
+                        zIndex: 1000,
+                        display: "none"
+                    });
+
+                    $("body").append($info);
+                    const offset = $btn.offset();
+                    $info.css({ top: offset.top - $info.outerHeight() - 5, left: offset.left });
+                    $info.fadeIn(100);
+                    $btn.data("hover-box", $info);
+                });
+            })
+            .on("mouseleave", function () {
+                const $btn = $(this);
+                const $info = $btn.data("hover-box");
+                if ($info) {
+                    $info.fadeOut(100, function () { $(this).remove(); });
+                    $btn.removeData("hover-box").removeData("hover-loaded");
+                }
+            });
+
+        $(".btn-interesse").off("mouseenter mouseleave")
+            .on("mouseenter", function () {
+                const $btn = $(this);
+                const eventId = $btn.data("id");
+
+                if ($btn.data("hover-loaded")) return;
+                $btn.data("hover-loaded", true);
+
+                $.post("api.php", { request: "get_interested", event_id: eventId }, function (res) {
+                    const html = createHoverInfo(res.interested);
+                    const $info = $(html).css({
+                        position: "absolute",
+                        background: "#f0f0f0",
+                        border: "1px solid #ccc",
+                        padding: "5px",
+                        fontSize: "0.9em",
+                        zIndex: 1000,
+                        display: "none"
+                    });
+
+                    $("body").append($info);
+                    const offset = $btn.offset();
+                    $info.css({ top: offset.top - $info.outerHeight() - 5, left: offset.left });
+                    $info.fadeIn(100);
+                    $btn.data("hover-box", $info);
+                });
+            })
+            .on("mouseleave", function () {
+                const $btn = $(this);
+                const $info = $btn.data("hover-box");
+                if ($info) {
+                    $info.fadeOut(100, function () { $(this).remove(); });
+                    $btn.removeData("hover-box").removeData("hover-loaded");
+                }
+            });
+    }
+
     // New function to render the month view
+    
     function renderMonthView() {
         const startOfMonth = currentMoment.clone().startOf('month');
         const endOfMonth = currentMoment.clone().endOf('month');
@@ -137,7 +302,6 @@ $(function() {
             $dayCell.on('click', function() {
                 const selectedDate = $(this).data('date');
                 currentMoment = moment(selectedDate);
-                console.log(`Navigating to week view for date: ${selectedDate}`);
                 currentView = 'week';
                 $('.view-button[data-view="week"]').click(); // Programmatically click the week button to update the view
             });
@@ -214,7 +378,6 @@ $(function() {
         }
     }
 
-
     $('#prevPeriod').click(() => {
         currentMoment.subtract(1, currentView);
         renderPlanning();
@@ -227,7 +390,24 @@ $(function() {
         currentView = $(this).data('view');
         renderPlanning();
     });
-    
+    // Gestion du clic sur les événements pour afficher le popup
+    $(document).on('click', '.event-card', function() {
+        const eventId = $(this).data('event-id');
+        const event = allEvents.find(ev => ev.id == eventId);
+        
+        if (event) {
+            renderSingleEvent(event);
+            $('#popup').show();
+        } else {
+            console.warn("Événement non trouvé :", eventId);
+        }
+    });
+
+
+    $('#closePopup').on('click', function() {
+        $('#popup').hide();
+    });
+
     generateTimeAxis();
     renderPlanning();
 
@@ -237,6 +417,11 @@ $(function() {
     updateTimeLine();
 });
 </script>
+
+<div id="popup">
+    <button id="closePopup" style="float:right;">X</button>
+    <div id="event"></div>
+</div>
 
 </body>
 </html>
