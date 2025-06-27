@@ -24,6 +24,8 @@ $userParticipate = [];
 
 foreach ($userEventParticipationId as $id) {
     $userParticipate[] = newGetEvent($id);
+    tprint("Event for ID $id:");
+    tprint($event); // Affichez l'événement complet
 }
 
 $userBadges = getUserBadges($user['id']) ?? [];
@@ -40,7 +42,8 @@ foreach ($userEventOrganizationId as $id) {
     $userOrga[] = newGetEvent($id);
 }
 
-tprint($userParticipate);
+tprint("All participated events:");
+tprint($userParticipate); // Affichez le tableau final
 
 ?>
 
