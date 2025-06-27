@@ -223,7 +223,7 @@ function getEventById($id) {
                    ASS.name AS association_name,
                    GROUP_CONCAT(DISTINCT T.name ORDER BY T.name SEPARATOR ',') AS tagNames,
                    GROUP_CONCAT(DISTINCT ET.tag ORDER BY ET.tag SEPARATOR ',') AS tagIds,
-                   GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'organize' THEN U.username END) AS organizers,
+                   GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'orga' THEN U.username END) AS organizers,
                    GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'participate' THEN U.username END) AS participants,
                    GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'interested' THEN U.username END) AS interested
             FROM events E

@@ -16,7 +16,7 @@ $user = getUserByUsername(valider("username"));
 
 $userEventParticipationId = getUserEventInvolvementIds($user['id'], $type = "participate");
 $userEventInterestId = getUserEventInvolvementIds($user['id'], $type = "interested");
-$userEventOrganizationId = getUserEventInvolvementIds($user['id'], $type = "organize");
+$userEventOrganizationId = getUserEventInvolvementIds($user['id'], $type = "orga");
 
 tprint(getUserEventInvolvementIds($user['id'], $type = "organize"));
 tprint(getUserEventInvolvementIds($user['id'], $type = "orga"));
