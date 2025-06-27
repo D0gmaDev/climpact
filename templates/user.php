@@ -344,6 +344,14 @@ foreach ($userEventOrganizationId as $id) {
         <div class="section">
             <h3>📅 Événements auxquels j'ai participé</h3>
             <div class="event-list">
+                <?php 
+                    echo "<div style='background: #d4edda; padding: 10px; margin: 10px 0;'>";
+                    echo "<h4>🧪 Test getEvent() corrigé</h4>";
+                    foreach ($userEventParticipationId as $id) {
+                        $event = getEvent($id);
+                        echo "<p>ID {$id} -> " . ($event ? "'{$event['title']}' (Event ID: {$event['id']})" : "NULL") . "</p>";
+                        }
+                    echo "</div>";?>
                 <?php if (empty($userParticipate)): ?>
                     <div class="event-item">
                         <div class="event-info">
