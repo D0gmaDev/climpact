@@ -23,7 +23,7 @@ tprint(getUserEventInvolvementIds($user['id'], $type = "participate"));
 $userParticipate = [];
 
 foreach ($userEventParticipationId as $id) {
-    $userParticipate[] = getEvent($id);
+    $userParticipate[] = newGetEvent($id);
 }
 
 $userBadges = getUserBadges($user['id']) ?? [];
@@ -31,13 +31,13 @@ $userBadges = getUserBadges($user['id']) ?? [];
 $userInterests = [];
 
 foreach ($userEventInterestId as $id) {
-    $userInterests[] = getEvent($id);
+    $userInterests[] = newGetEvent($id);
 }
 
 $userOrga = [];
 
 foreach ($userEventOrganizationId as $id) {
-    $userOrga[] = getEvent($id);
+    $userOrga[] = newGetEvent($id);
 }
 
 tprint($userParticipate);
