@@ -325,10 +325,17 @@ function toggleInvolvement($idUser, $idEvent, $type = "participate")
 	}
 }
 
+// Dans modele.php
 function getUserEventInvolvementIds($idUser, $type = "participate")
 {
-	$SQL = "SELECT event FROM involvements WHERE user = '$idUser' AND type = '$type'";
-	return parcoursRs(SQLSelect($SQL));
+    $SQL = "SELECT event FROM involvements WHERE user = '$idUser' AND type = '$type'";
+    $results = parcoursRs(SQLSelect($SQL));
+    
+    $eventIds = [];
+    foreach ($results as $row) {
+        $eventIds[] = $row['event']; // Extraire seulement l'ID de l'événement
+    }
+    return $eventIds;
 }
 
 function getInvolvementStatus($idUser, $idEvent)
