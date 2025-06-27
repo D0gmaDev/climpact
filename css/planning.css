@@ -109,7 +109,7 @@
     background-color: #f0f0f0;
 }
 
-/* --- Planning Grid --- */
+/* --- Grille du Planning --- */
 .planning-grid-container {
     display: grid;
     grid-template-columns: 70px 1fr; /* Colonne des heures | Colonne des jours */
@@ -128,7 +128,7 @@
 }
 
 .time-slot {
-    height: 48px; /* Hauteur pour un créneau de 30 minutes ou 1 heure, à ajuster */
+    height: 48px; /* Hauteur pour un créneau de 30 minutes ou 1 heure, à ajuster si besoin */
     line-height: 48px; /* Centre le texte verticalement */
     text-align: right;
     padding-right: 10px;
@@ -137,10 +137,7 @@
     border-bottom: 1px dashed #eee;
     box-sizing: border-box;
 }
-.time-slot:first-child {
-    height: 0; /* cache le 00:00 */
-    border-bottom: none;
-}
+
 .time-slot:last-child {
     border-bottom: none;
 }
@@ -238,7 +235,7 @@
 /* Titre de l'événement */
 .event-card .event-title {
     margin: 0;
-    font-size: 13px; /* Taille de police légèrement plus grande */
+    font-size: 13px; /* Taille de police légèrement plus grande pour le titre */
     font-weight: bold; /* Titre mis en avant */
     line-height: 1.2;
     color: #4a382d; /* Couleur de texte sombre pour le titre */
@@ -259,7 +256,7 @@
     text-overflow: ellipsis;
 }
     
-/* --- Month View Specifics --- */
+/* --- Vue par mois --- */
 .day-header-month {
     text-align: center;
     font-weight: 600;
@@ -273,7 +270,7 @@
     border: 1px solid #e2e8f0;
     border-top: none;
     padding: 10px;
-    min-height: 120px; /* Adjust height as needed for month cells */
+    min-height: 120px;
     position: relative;
     cursor: pointer;
     transition: background-color 0.2s;
@@ -328,31 +325,31 @@
     transform: translate(-50%, -50%);
     padding: 10px;
     z-index: 1000;
-    background: white; /* à adapter */
+    background: white;
     border-radius: 12px; /* pour un effet sympa */
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    max-width: 90vw; /* ou une taille max */
+    max-width: 90vw;
     max-height: 90vh;
     overflow-y: auto; /* si le contenu est grand */
   }
 
 #closePopup {
-position: absolute; /* pour la placer en haut à droite */
-top: 10px;
-right: 10px;
-background: transparent;
-border: none;
-font-size: 1.3em;
-cursor: pointer;
-color: #555;
-z-index: 1100; /* plus haut que la popup */
-transition: color 0.3s ease;
+    position: absolute; /* pour la placer en haut à droite */
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 1.3em;
+    cursor: pointer;
+    color: #555;
+    z-index: 1100; /* pour que la croix s'affiche bien par dessus de l'event-card */
+    transition: color 0.3s ease;
 }
 
 #closePopup:hover {
-color: #d33; /* rouge quand on survole */
+    color: #d33;
 }
-  
+
 /* Carte dans le popup */
 .event {
     background-color: var(--background-white);
@@ -446,14 +443,14 @@ color: #d33; /* rouge quand on survole */
     color: var(--text-color-dark);
 }
 
-.event .event-image { /* Ajout d'une classe pour mieux cibler */
+.event .event-image {
     max-width: 100%;
     height: auto;
     border-radius: 8px;
     margin-top: 15px;
 }
 
-.event .tags-list { /* Ajout d'une classe pour les tags */
+.event .tags-list { 
     margin-bottom: 15px;
 }
 
@@ -469,7 +466,7 @@ color: #d33; /* rouge quand on survole */
 }
 
 /* --- Boutons d'action dans les cartes --- */
-.event .actions { /* Ajout d'une classe conteneur */
+.event .actions {
     margin-top: auto; /* Pousse les boutons en bas de la carte */
     padding-top: 15px;
     border-top: 1px solid var(--border-color);

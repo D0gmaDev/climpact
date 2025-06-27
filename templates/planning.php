@@ -46,6 +46,7 @@
     const allEvents = <?= json_encode($events, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP) ?>;
 </script>
 
+<!-- Moment.js et jQuery pour la gestion des dates et des événements -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/fr.min.js"></script>
@@ -62,7 +63,6 @@ $(function() {
 
     function generateTimeAxis() {
         const $ta = $('.time-axis').empty();
-        $ta.append('<div class="time-slot"></div>');
         for (let i = 7; i < 24; i++) {
             const label = moment().startOf('day').add(i, 'hours').format('HH:mm');
             $ta.append(`<div class="time-slot">${label}</div>`);
@@ -89,7 +89,7 @@ $(function() {
             const $col = $(`.day-column[data-date="${day}"]`);
             if (!$col.length) return;
             const eventMinutes = s.hours() * 60 + s.minutes();
-            const top = (eventMinutes - 420) * pixelsPerMinute; // 420 = 7 * 60
+            const top = (eventMinutes - 420) * pixelsPerMinute; // 420 = 7 * 60 car on commence à 7h
             const height = (e.diff(s, 'minutes')) * pixelsPerMinute;
             if (top + height < 0) return; // Trop tôt, on n'affiche pas
             const $card = $('#event-template').contents().clone();
@@ -104,7 +104,7 @@ $(function() {
         });
     }
 
-    // Fonction pour le rendu de l'event depuis le popup 
+    // Fonction pour le rendu de l'event dans le popup, basée sur la fonction de rendu des évènements dans accueil.php
 
     function renderSingleEvent(event, $disabled = false) {
         const $container = $("#event");
@@ -175,7 +175,7 @@ $(function() {
             });
         });
 
-        // Hover info box
+        // Information au survol des boutons
         function createHoverInfo(users, max = 5) {
             if (!users || users.length === 0) {
                 return "<div class='hover-info-box'><em>Aucun</em></div>";
@@ -265,7 +265,7 @@ $(function() {
             });
     }
 
-    // New function to render the month view
+    // Fonction spécifique pour le rendu de la vue mois
     
     function renderMonthView() {
         const startOfMonth = currentMoment.clone().startOf('month');
@@ -274,18 +274,17 @@ $(function() {
         const endWeek = endOfMonth.clone().endOf('week');
         const totalDays = endWeek.diff(startWeek, 'days') + 1;
         
-        // Hide time axis
         $('.time-axis').hide();
-        // Clear the day grid and set up the month grid
+        // Réinitialiser les conteneurs
         const $hdr = $('.day-headers-row').empty().css('grid-template-columns', 'repeat(7, 1fr)');
         const $grid = $('.events-grid').empty().css('grid-template-columns', 'repeat(7, 1fr)');
         
-        // Generate day of week headers
+        // On génère les en-têtes de jour pour la semaine
         for (let i = 0; i < 7; i++) {
             $hdr.append(`<div class="day-header-month">${moment().startOf('week').add(i, 'days').format('ddd')}</div>`);
         }
         
-        // Generate day cells for the month grid
+        // On génère les cellules de jour pour le mois
         for (let i = 0; i < totalDays; i++) {
             const day = startWeek.clone().add(i, 'days');
             const dayFormatted = day.format('YYYY-MM-DD');
@@ -298,16 +297,16 @@ $(function() {
             
             $grid.append($dayCell);
 
-            // Add click event to navigate to the corresponding week view
+            // Gestion du clic sur la cellule d'un jour
             $dayCell.on('click', function() {
                 const selectedDate = $(this).data('date');
                 currentMoment = moment(selectedDate);
                 currentView = 'week';
-                $('.view-button[data-view="week"]').click(); // Programmatically click the week button to update the view
+                $('.view-button[data-view="week"]').click();
             });
         }
 
-        // Add event dots
+        // Ajouts de points pour les événements
         allEvents.forEach(ev => {
             const s = moment(ev.start_time);
             const day = s.format('YYYY-MM-DD');
@@ -329,7 +328,7 @@ $(function() {
             sd = currentMoment.clone().startOf('week');
             ed = currentMoment.clone().endOf('week');
             generateDayGrid(sd, 7);
-            $('.current-time-line').remove(); // Avant d’en ajouter une
+            $('.current-time-line').remove(); // Avant d’en ajouter une on évite les doublons
             $('.events-grid').append('<div class="current-time-line"></div>');
             label = `${sd.format('DD MMMM')} - ${ed.format('DD MMMM YYYY')}`;
             renderEvents(sd, ed);
@@ -340,7 +339,7 @@ $(function() {
             sd = currentMoment.clone().startOf('day');
             ed = currentMoment.clone().endOf('day');
             generateDayGrid(sd, 1);
-            $('.current-time-line').remove(); // Avant d’en ajouter une
+            $('.current-time-line').remove();
             $('.events-grid').append('<div class="current-time-line"></div>');
             label = currentMoment.format('dddd DD MMMM YYYY');
             renderEvents(sd, ed);
