@@ -23,7 +23,8 @@ tprint(getUserEventInvolvementIds($user['id'], $type = "participate"));
 $userParticipate = [];
 
 foreach ($userEventParticipationId as $id) {
-    $userParticipate[] = newGetEvent($id);
+    $event = newGetEvent($id);
+    $userParticipate[] = $event;
     tprint("Event for ID $id:");
     tprint($event); // Affichez l'événement complet
 }
