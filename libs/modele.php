@@ -432,6 +432,19 @@ function getUserDistinctParticipationMonths($idUser)
 	return $result ? intval($result) : 0;
 }
 
+function getBadges()
+{
+	$SQL = "SELECT * FROM badges ORDER BY id";
+	return parcoursRs(SQLSelect($SQL));
+}
+
+function getBadgeById($idBadge)
+{
+	$SQL = "SELECT * FROM badges WHERE id = " . intval($idBadge);
+	$results = parcoursRs(SQLSelect($SQL));
+	return count($results) > 0 ? $results[0] : null;
+}
+
 function getUserBadges($idUser)
 {
 	$badges = [];
