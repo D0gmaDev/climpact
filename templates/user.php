@@ -18,7 +18,11 @@ $userEventParticipationId = getUserEventInvolvementIds($user['id'], $type = "par
 $userEventInterestId = getUserEventInvolvementIds($user['id'], $type = "interested");
 $userEventOrganizationId = getUserEventInvolvementIds($user['id'], $type = "organize");
 
-tprint(getUserEventInvolvementIds($user['id'], $type = "participate"));
+tprint(getUserEventInvolvementIds($user['id'], $type = "organize"));
+tprint(getUserEventInvolvementIds($user['id'], $type = "orga"));
+tprint(getUserEventInvolvementIds($user['id'], $type = "organized"));
+
+
 
 $userParticipate = [];
 
@@ -44,7 +48,7 @@ foreach ($userEventOrganizationId as $id) {
     tprint($event); // Affichez l'événement complet
 }
 
-tprint("All participated events:");
+tprint("All organized events:");
 tprint($userOrga); // Affichez le tableau final
 
 ?>
