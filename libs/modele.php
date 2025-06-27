@@ -153,14 +153,17 @@ function removeOrganizerFromEvent($eventId, $username)
 	return SQLDelete($SQL);
 }
 
-function getEvents($nb = 0, $activeOnly = true, $tagIds = [], $associationIds = [])
+function getEvent($id)
 {
-	$SQL = "SELECT E.*,
+    $id = intval($id);
+    
+    // Option 1 : Requête directe (recommandée)
+    $SQL = "SELECT E.*,
                    AU.username AS author_username,
                    AU.first_name AS author_firstName,
                    AU.last_name AS author_lastName,
                    AU.picture AS author_picture,
-				   ASS.name AS association_name,
+                   ASS.name AS association_name,
                    GROUP_CONCAT(DISTINCT T.name ORDER BY T.name SEPARATOR ',') AS tagNames,
                    GROUP_CONCAT(DISTINCT ET.tag ORDER BY ET.tag SEPARATOR ',') AS tagIds,
                    GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'orga' THEN U.username END) AS organizers,
@@ -171,47 +174,101 @@ function getEvents($nb = 0, $activeOnly = true, $tagIds = [], $associationIds = 
             LEFT JOIN event_tags ET ON E.id = ET.event
             LEFT JOIN tags T ON ET.tag = T.id
             LEFT JOIN involvements I ON E.id = I.event
-			LEFT JOIN associations ASS ON E.association = ASS.id
+            LEFT JOIN associations ASS ON E.association = ASS.id
+            LEFT JOIN users U ON I.user = U.id
+            WHERE E.id = $id
+            GROUP BY E.id";
+    
+    $result = parcoursRs(SQLSelect($SQL));
+    
+    if (empty($result)) {
+        return null;
+    }
+    
+    $event = $result[0];
+    
+    // Traitement des champs comme dans getEvents()
+    $event['organizers'] = isset($event['organizers']) && $event['organizers'] ? explode(',', $event['organizers']) : [];
+    $event['participants'] = isset($event['participants']) && $event['participants'] ? explode(',', $event['participants']) : [];
+    $event['interested'] = isset($event['interested']) && $event['interested'] ? explode(',', $event['interested']) : [];
+    $event['tagIds'] = isset($event['tagIds']) && $event['tagIds'] ? explode(',', $event['tagIds']) : [];
+    $event['tagNames'] = isset($event['tagNames']) && $event['tagNames'] ? explode(',', $event['tagNames']) : [];
+    
+    return $event;
+}
+
+// Option 2 : Modifier getEvents() pour accepter un ID spécifique
+function getEvents($nb = 0, $activeOnly = true, $tagIds = [], $associationIds = [], $specificId = null)
+{
+    $SQL = "SELECT E.*,
+                   AU.username AS author_username,
+                   AU.first_name AS author_firstName,
+                   AU.last_name AS author_lastName,
+                   AU.picture AS author_picture,
+                   ASS.name AS association_name,
+                   GROUP_CONCAT(DISTINCT T.name ORDER BY T.name SEPARATOR ',') AS tagNames,
+                   GROUP_CONCAT(DISTINCT ET.tag ORDER BY ET.tag SEPARATOR ',') AS tagIds,
+                   GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'orga' THEN U.username END) AS organizers,
+                   GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'participate' THEN U.username END) AS participants,
+                   GROUP_CONCAT(DISTINCT CASE WHEN I.type = 'interested' THEN U.username END) AS interested
+            FROM events E
+            LEFT JOIN users AU ON E.author = AU.id
+            LEFT JOIN event_tags ET ON E.id = ET.event
+            LEFT JOIN tags T ON ET.tag = T.id
+            LEFT JOIN involvements I ON E.id = I.event
+            LEFT JOIN associations ASS ON E.association = ASS.id
             LEFT JOIN users U ON I.user = U.id";
 
-	$conditions = [];
+    $conditions = [];
 
-	if ($activeOnly) {
-		$conditions[] = "E.end_time >= NOW()";
-	}
+    // Si on cherche un ID spécifique, on ignore les autres conditions
+    if ($specificId !== null) {
+        $conditions[] = "E.id = " . intval($specificId);
+    } else {
+        if ($activeOnly) {
+            $conditions[] = "E.end_time >= NOW()";
+        }
 
-	if (!empty($tagIds)) {
-		$tagIds = array_map('intval', $tagIds);
-		$conditions[] = "E.id IN (SELECT event FROM event_tags WHERE tag IN (" . implode(',', $tagIds) . "))";
-	}
+        if (!empty($tagIds)) {
+            $tagIds = array_map('intval', $tagIds);
+            $conditions[] = "E.id IN (SELECT event FROM event_tags WHERE tag IN (" . implode(',', $tagIds) . "))";
+        }
 
-	if (!empty($associationIds)) {
-		$associationIds = array_map('intval', $associationIds);
-		$conditions[] = "E.association IN (" . implode(',', $associationIds) . ")";
-	}
+        if (!empty($associationIds)) {
+            $associationIds = array_map('intval', $associationIds);
+            $conditions[] = "E.association IN (" . implode(',', $associationIds) . ")";
+        }
+    }
 
-	if (!empty($conditions)) {
-		$SQL .= " WHERE " . implode(' AND ', $conditions);
-	}
+    if (!empty($conditions)) {
+        $SQL .= " WHERE " . implode(' AND ', $conditions);
+    }
 
-	$SQL .= " GROUP BY E.id";
-	$SQL .= " ORDER BY E.start_time ASC";
+    $SQL .= " GROUP BY E.id";
+    $SQL .= " ORDER BY E.start_time ASC";
 
-	if ($nb > 0) {
-		$SQL .= " LIMIT $nb";
-	}
+    if ($nb > 0) {
+        $SQL .= " LIMIT $nb";
+    }
 
-	$result = parcoursRs(SQLSelect($SQL));
+    $result = parcoursRs(SQLSelect($SQL));
 
-	foreach ($result as &$event) {
-		$event['organizers'] = isset($event['organizers']) && $event['organizers'] ? explode(',', $event['organizers']) : [];
-		$event['participants'] = isset($event['participants']) && $event['participants'] ? explode(',', $event['participants']) : [];
-		$event['interested'] = isset($event['interested']) && $event['interested'] ? explode(',', $event['interested']) : [];
-		$event['tagIds'] = isset($event['tagIds']) && $event['tagIds'] ? explode(',', $event['tagIds']) : [];
-		$event['tagNames'] = isset($event['tagNames']) && $event['tagNames'] ? explode(',', $event['tagNames']) : [];
-	}
+    foreach ($result as &$event) {
+        $event['organizers'] = isset($event['organizers']) && $event['organizers'] ? explode(',', $event['organizers']) : [];
+        $event['participants'] = isset($event['participants']) && $event['participants'] ? explode(',', $event['participants']) : [];
+        $event['interested'] = isset($event['interested']) && $event['interested'] ? explode(',', $event['interested']) : [];
+        $event['tagIds'] = isset($event['tagIds']) && $event['tagIds'] ? explode(',', $event['tagIds']) : [];
+        $event['tagNames'] = isset($event['tagNames']) && $event['tagNames'] ? explode(',', $event['tagNames']) : [];
+    }
 
-	return $result;
+    return $result;
+}
+
+// Puis la nouvelle fonction getEvent() :
+function getEvent($id)
+{
+    $results = getEvents(1, false, [], [], intval($id)); // activeOnly = false, pas de tags/associations, ID spécifique
+    return count($results) > 0 ? $results[0] : null;
 }
 
 function getFutureEvents($limit = 10)
@@ -219,11 +276,7 @@ function getFutureEvents($limit = 10)
 	return getEvents($limit, "WHERE e.end_time > NOW()");
 }
 
-function getEvent($id)
-{
-	$results = getEvents(1, "WHERE e.id = " . intval($id));
-	return count($results) > 0 ? $results[0] : null;
-}
+
 
 function getEventTags($id)
 {
