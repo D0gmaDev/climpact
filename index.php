@@ -46,8 +46,7 @@ if ($view == "accueil") {
 }
 
 if ($view == "planning"){
-    $events = getEvents();
-    $allTags = getTags();
+    $events = getEvents(0,false);
 }
 
 if (file_exists("templates/$view.php")) {
