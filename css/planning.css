@@ -219,7 +219,7 @@
 .event-card:hover {
     transform: scale(1.01); /* Agrandissement légèrement au survol */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    background-color: #f7f1d9; /* L'évènement devient légèrement plus sombre au survol */
+    background-color: #def9cc; /* L'évènement devient légèrement plus sombre au survol */
 }
 
 /* Conteneur des heures de début et de fin */
@@ -313,7 +313,7 @@
 .event-dot {
     width: 8px;
     height: 8px;
-    background-color: #2c7a7b;
+    background-color: var(--primary-color);
     border-radius: 50%;
     flex-shrink: 0;
 }
