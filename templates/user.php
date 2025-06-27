@@ -20,10 +20,10 @@ $userEventOrganizationId = getUserEventInvolvementIds($user['id'], $type = "orga
 
 
 
-$userParticipation = [];
+$userParticipate = [];
 
 foreach ($userEventParticipationId as $id) {
-    $userParticipation[] = getEvent($id);
+    $userParticipate[] = getEvent($id);
 }
 
 $userBadges = getUserBadges($user['id']) ?? [];
@@ -600,20 +600,3 @@ window.onclick = function(event) {
 }
 </script>
 
-<?php
-
-$username = valider("username");
-
-if(!$username) {
-	echo "<p>Veuillez spécifier un nom d'utilisateur.</p>";
-	exit;
-}
-
-$user = getUserByUsername($username);
-
-if (!$user) {
-	echo "<p>Aucun utilisateur trouvé avec le nom d'utilisateur : $username</p>";
-	exit;
-}
-
-?>
