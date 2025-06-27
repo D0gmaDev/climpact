@@ -18,7 +18,7 @@ $userEventParticipationId = getUserEventInvolvementIds($user['id'], $type = "par
 $userEventInterestId = getUserEventInvolvementIds($user['id'], $type = "interested");
 $userEventOrganizationId = getUserEventInvolvementIds($user['id'], $type = "organize");
 
-
+tprint(getUserEventInvolvementIds($user['id'], $type = "participate"));
 
 $userParticipate = [];
 
@@ -352,7 +352,6 @@ foreach ($userEventOrganizationId as $id) {
                         </div>
                     </div>
                 <?php else: ?>
-                    <?php tprint($userParticipate)?>
                     <?php foreach ($userParticipate as $event): ?>
                         <div class="event-item">
                             <div class="event-info">
@@ -401,7 +400,6 @@ foreach ($userEventOrganizationId as $id) {
                         </div>
                     </div>
                 <?php else: ?>
-                    <?php tprint($userInterests)?>
                     <?php foreach ($userInterests as $event): ?>
                         <div class="event-item">
                             <div class="event-info">
