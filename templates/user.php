@@ -36,7 +36,7 @@ foreach ($userEventInterestId as $id) {
 
 $userOrga = [];
 
-foreach ($userEventOrgaizationId as $id) {
+foreach ($userEventOrganizationId as $id) {
     $userOrga[] = getEvent($id);
 }
 
@@ -344,7 +344,7 @@ foreach ($userEventOrgaizationId as $id) {
         <div class="section">
             <h3>📅 Événements auxquels j'ai participé</h3>
             <div class="event-list">
-                <?php if (empty($userParticipate['participated'])): ?>
+                <?php if (empty($userParticipate)): ?>
                     <div class="event-item">
                         <div class="event-info">
                             <h4>Aucun événement</h4>
@@ -352,7 +352,7 @@ foreach ($userEventOrgaizationId as $id) {
                         </div>
                     </div>
                 <?php else: ?>
-                    <?php foreach ($userParticipate['participated'] as $event): ?>
+                    <?php foreach ($userParticipate as $event): ?>
                         <div class="event-item">
                             <div class="event-info">
                                 <h4><?php echo htmlspecialchars($event['title']); ?></h4>
@@ -368,7 +368,7 @@ foreach ($userEventOrgaizationId as $id) {
         <div class="section">
             <h3>📝 Événements que j'ai organisés</h3>
             <div class="event-list">
-                <?php if (empty($userOrga['organized'])): ?>
+                <?php if (empty($userOrga)): ?>
                     <div class="event-item">
                         <div class="event-info">
                             <h4>Aucun événement organisé</h4>
@@ -376,7 +376,7 @@ foreach ($userEventOrgaizationId as $id) {
                         </div>
                     </div>
                 <?php else: ?>
-                    <?php foreach ($userOrga['organized'] as $event): ?>
+                    <?php foreach ($userOrga as $event): ?>
                         <div class="event-item">
                             <div class="event-info">
                                 <h4><?php echo htmlspecialchars($event['title']); ?></h4>
