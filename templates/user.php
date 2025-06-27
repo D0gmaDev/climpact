@@ -322,12 +322,12 @@ foreach ($userEventOrganizationId as $id) {
                 <?php
                 // Définition des badges disponibles
                 $availableBadges = [
-                    '1' => ['icon' => '🎯', 'name' => 'Nouveau venu', 'desc' => 'C\'est parti pour l\'engagement !'],
-                    '2' => ['icon' => '🧩', 'name' => 'Curieux.se', 'desc' => 'Toujours à l\'affût des bonnes initiatives.'],
-                    '3' => ['icon' => '💬', 'name' => 'Actif.ve', 'desc' => 'Engagé.e dans l\'action !'],
-                    '4' => ['icon' => '💥', 'name' => 'Super participant.e', 'desc' => 'Pilier des événements CLimpact.'],
-                    '5' => ['icon' => '🛠', 'name' => 'Organisateur.rice', 'desc' => 'Tu lances les initiatives, bravo !'],
-                    '7' => ['icon' => '🔁', 'name' => 'Fidèle', 'desc' => 'L\'engagement, c\'est dans la durée.']
+                    'nouveau' => ['icon' => '🎯', 'name' => 'Nouveau venu', 'desc' => 'C\'est parti pour l\'engagement !'],
+                    'curieux' => ['icon' => '🧩', 'name' => 'Curieux.se', 'desc' => 'Toujours à l\'affût des bonnes initiatives.'],
+                    'actif' => ['icon' => '💬', 'name' => 'Actif.ve', 'desc' => 'Engagé.e dans l\'action !'],
+                    'super' => ['icon' => '💥', 'name' => 'Super participant.e', 'desc' => 'Pilier des événements CLimpact.'],
+                    'organisateur' => ['icon' => '🛠', 'name' => 'Organisateur.rice', 'desc' => 'Tu lances les initiatives, bravo !'],
+                    'fidele' => ['icon' => '🔁', 'name' => 'Fidèle', 'desc' => 'L\'engagement, c\'est dans la durée.']
                 ];
                 
                 foreach ($availableBadges as $badgeId => $badge) {
