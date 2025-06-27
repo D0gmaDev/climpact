@@ -19,22 +19,8 @@ jobs:
           sed -i 's/%%DB_PASSWORD%%/${{ secrets.DB_PASSWORD }}/g' config.php
         shell: bash
 
-      - name: Prepare clean folder
-        run: |
-          mkdir upload_clean
-          shopt -s dotglob
-          find . -mindepth 1 -maxdepth 1 ! -name upload_clean -exec cp -r {} upload_clean/ \;
-          rm -rf upload_clean/.git
-
-      - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
-
-      - name: Write SFTP private key
-        run: |
-          echo "${{ secrets.DEPLOY_KEY }}" > id_rsa_climpact
-          chmod 600 id_rsa_climpact
-
-      - name: Deploy with lftp
-        run: |
-          cd upload_clean
-          lftp -u climpact23,"" -e "set sftp:connect-program 'ssh -i ../id_rsa_climpact -o StrictHostKeyChecking=no -p 8888'; set ssl:verify-certificate no; mirror -R --delete --exclude-glob .git/ ./ /writable/; bye" sftp://sftp.rezoleo.fr
+      - name: Deploy to Rezoleo
+        uses: rezoleo/rezoleo-deploy-action@v1
+        with:
+          sftp-key: ${{ secrets.DEPLOY_KEY }}
+          sftp-user: climpact23
