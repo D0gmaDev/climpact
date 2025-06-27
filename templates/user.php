@@ -18,11 +18,6 @@ $userEventParticipationId = getUserEventInvolvementIds($user['id'], $type = "par
 $userEventInterestId = getUserEventInvolvementIds($user['id'], $type = "interested");
 $userEventOrganizationId = getUserEventInvolvementIds($user['id'], $type = "orga");
 
-tprint(getUserEventInvolvementIds($user['id'], $type = "organize"));
-tprint(getUserEventInvolvementIds($user['id'], $type = "orga"));
-tprint(getUserEventInvolvementIds($user['id'], $type = "organized"));
-
-
 
 $userParticipate = [];
 
@@ -44,12 +39,7 @@ $userOrga = [];
 foreach ($userEventOrganizationId as $id) {
     $event = newGetEvent($id);
     $userOrga[] = $event;
-    tprint("Event for ID $id:");
-    tprint($event); // Affichez l'événement complet
 }
-
-tprint("All organized events:");
-tprint($userOrga); // Affichez le tableau final
 
 ?>
 
@@ -390,7 +380,12 @@ tprint($userOrga); // Affichez le tableau final
                     <?php foreach ($userOrga as $event): ?>
                         <div class="event-item">
                             <div class="event-info">
-                                <h4><?php echo htmlspecialchars($event['title']); ?></h4>
+                                <h4>
+                                    <a href="index.php?view=create&id=<?php echo htmlspecialchars($event['id']); ?>" 
+                                       title="Modifier l'événement : <?php echo htmlspecialchars($event['title']); ?>"
+                                       style="color: inherit; text-decoration: none;"> <?php echo htmlspecialchars($event['title']); ?>
+                                    </a>
+                                </h4>
                                 <div class="event-date"><?php echo date('d/m/Y', strtotime($event['start_time'])); ?></div>
                             </div>
                             <div class="event-type organized">Organisé</div>
