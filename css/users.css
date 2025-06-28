@@ -1,0 +1,36 @@
+.user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.user-card {
+    background-color: var(--background-white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: box-shadow 0.2s;
+}
+
+.user-card:hover {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.user-link {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-link:hover {
+    text-decoration: underline;
+}
+
+.badge {
+    font-size: 1.2rem;
+    line-height: 1;
+}

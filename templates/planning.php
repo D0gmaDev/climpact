@@ -4,11 +4,10 @@
 </head>
 <body>
 
+<h1>Planning Général</h1>
+
 <div class="planning-section">
     <div class="planning-header">
-        <div class="planning-title-container">
-            <h1 class="planning-title">Planning Général</h1>
-        </div>
         <div class="planning-navigation">
             <button class="nav-arrow" id="prevPeriod">&lt;</button>
             <span class="current-period-display" id="currentPeriodDisplay"></span>

@@ -15,7 +15,6 @@ include_once("libs/modele.php");
         <?php endforeach; ?>
     </div>
 
-    <!-- Résultats dynamiques -->
     <h2>Événements à venir</h2>
     <div id="eventContainer"></div>
 
@@ -25,7 +24,6 @@ include_once("libs/modele.php");
 
 <link rel="stylesheet" href="css/accueil.css" />
 
-<!-- jQuery et JS custom -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 
@@ -70,7 +68,7 @@ include_once("libs/modele.php");
             });
         }
 
-        function renderEvents(containerId, events, $disabled=false) {
+        function renderEvents(containerId, events, $disabled = false) {
             const $container = $(containerId);
             $container.empty();
 
@@ -144,7 +142,6 @@ include_once("libs/modele.php");
                 $container.append(html);
             });
 
-            // MODIFICATION dans la gestion des clics pour utiliser les classes
             // Gestion "Intéressé"
             $(".btn-interesse").off("click").on("click", function () {
                 const $btn = $(this);

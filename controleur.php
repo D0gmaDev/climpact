@@ -47,8 +47,7 @@ if ($action = valider("action")) {
 			$lieu = valider("lieu");
 			$image_url = valider("image_url"); // Champ optionnel
 
-			// Récupération des tableaux de tags et d'organisateurs
-			$tags = valider("tags") ?: []; // Si rien n'est envoyé, on a un tableau vide
+			$tags = valider("tags") ?: [];
 			$organizers = valider("organizers") ?: [];
 
 			if (in_array($association_id, getUserAssociations($idUser))) {
@@ -83,54 +82,37 @@ if ($action = valider("action")) {
 			$eventId = valider("eventId");
 			$idUser = valider("idUser", "SESSION");
 
-			if(!$eventId) {
+			if (!$eventId) {
 				$qs = "?view=accueil&error=eventidmissing";
 				break;
 			}
 
-			//todo verifier les droits
+			if (!isAuthorOfEvent($idUser, $eventId) && !isUserInvolvedInEvent($idUser, $eventId, "orga")) {
+				$qs = "?view=accueil&error=notauthorized";
+				break;
+			}
 
 			deleteEvent($eventId);
 			break;
 
 		case 'toggle_involvement':
 			if (!valider("connecte", "SESSION")) {
-				// Si l'utilisateur n'est pas connecté, on le redirige.
-				// L'affichage des boutons sera géré côté vue (accueil.php ou event.php)
-				// pour ne pas les montrer si l'utilisateur n'est pas connecté.
-				$qs = "?view=accueil&error=notconnected"; // Ou la vue d'origine
+				$qs = "?view=accueil&error=notconnected";
 				break;
 			}
 
 			$idUser = valider("idUser", "SESSION");
 			$idEvent = valider("idEvent");
-			$newType = valider("type"); // Le type d'implication souhaité ('interested' ou 'participate')
-			$redirect_view = valider("redirect_view") ?: "accueil"; // Vue vers laquelle rediriger après l'action
+			$type = valider("type");
+			$redirect_view = valider("redirect_view") ?: "accueil";
 
-			if (empty($idEvent) || empty($newType) || !in_array($newType, ['interested', 'participate'])) {
+			if (empty($idEvent) || empty($newType) || !in_array($type, ['interested', 'participate'])) {
 				$qs = "?view=$redirect_view&error=missinginvolvementdata";
 				break;
 			}
 
-			// Récupérer l'implication actuelle de l'utilisateur pour cet événement (interested ou participate)
-			$currentInvolvement = getInvolvementStatus($idUser, $idEvent);
-
-			if ($currentInvolvement == $newType) {
-				// L'utilisateur est déjà impliqué avec le type souhaité, on annule l'implication
-				deleteInvolvement($idUser, $idEvent, $newType);
-				$qs = "?view=$redirect_view&success=involvementremoved";
-			} else {
-				// L'utilisateur n'est pas impliqué avec ce type, ou est impliqué avec l'autre type mutuellement exclusif
-
-				// 1. Si une implication existait (interested ou participate), la supprimer d'abord
-				if ($currentInvolvement) {
-					deleteInvolvement($idUser, $idEvent, $currentInvolvement);
-				}
-
-				// 2. Insérer la nouvelle implication
-				insertInvolvement($idUser, $idEvent, $newType);
-				$qs = "?view=$redirect_view&success=involvementadded"; // Ou updated si on a supprimé avant
-			}
+			toggleInvolvement($idUser, $idEvent, $type);
+			$qs = "?view=$redirect_view&success=involvementtoggled";
 			break;
 
 		case 'updateEvent':
@@ -150,8 +132,18 @@ if ($action = valider("action")) {
 			break;
 
 		case 'addOrganizer':
+			if (!valider("connecte", "SESSION")) {
+				$qs = "?view=accueil&error=notconnected";
+				break;
+			}
+
 			$eventId = valider("eventId");
 			$username = valider("username");
+
+			if (!isAuthorOfEvent($idUser, $eventId) && !isUserInvolvedInEvent($idUser, $eventId, "orga")) {
+				$qs = "?view=accueil&error=notauthorized";
+				break;
+			}
 
 			if ($eventId && $username) {
 				addOrganizerToEvent($eventId, $username);
@@ -161,8 +153,18 @@ if ($action = valider("action")) {
 			break;
 
 		case 'removeOrganizer':
+			if (!valider("connecte", "SESSION")) {
+				$qs = "?view=accueil&error=notconnected";
+				break;
+			}
+
 			$eventId = valider("eventId");
 			$username = valider("username");
+
+			if (!isAuthorOfEvent($idUser, $eventId) && !isUserInvolvedInEvent($idUser, $eventId, "orga")) {
+				$qs = "?view=accueil&error=notauthorized";
+				break;
+			}
 
 			if ($eventId && $username) {
 				removeOrganizerFromEvent($eventId, $username);

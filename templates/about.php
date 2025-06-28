@@ -44,4 +44,20 @@
             href="https://centralelille.fr/centrale-lille/responsabilite-societale-environnementale/?utm_source=linkedin&utm_medium=social&utm_campaign&utm_content=ap_w02ibdom41"
             class="link">ici</a>
     </p>
+
+    <p>
+        <br />
+        <i>
+            Ce site a été développé en une semaine dans le cadre de l'électif disciplinaire
+            Technologies Web 2.0 en 2025 par
+            <a href="https://www.linkedin.com/in/ivan-gottardi-b44168291/">Ivan Gottardi</a>,
+            <a href="https://www.linkedin.com/in/mereana-haudbourg-armanaschi/">Mereana Haudbourg-Armanaschi</a>,
+            <a href="https://www.linkedin.com/in/david-marembert/">David Marembert</a> et
+            <a href="https://www.linkedin.com/in/lucile-picandet/">Lucile Picandet</a>.
+        </i>
+        <br />
+        <i>
+            Site hébergé par l'association <a href="https://rezoleo.fr/">Rézoléo</a>.
+        </i>
+    </p>
 </div>

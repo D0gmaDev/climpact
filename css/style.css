@@ -44,7 +44,7 @@ a {
 	padding: 2rem;
 }
 
-/* --- Barre latérale (Sidebar) --- */
+/* --- Barre latérale --- */
 .sidebar {
 	width: 280px;
 	flex-shrink: 0;
@@ -166,7 +166,7 @@ a {
 	color: var(--text-light);
 }
 
-/* --- Barre supérieure (Top Bar) --- */
+/* --- Barre supérieure --- */
 .top-bar {
 	display: flex;
 	justify-content: flex-end;

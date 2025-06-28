@@ -75,7 +75,6 @@ $current_view = valider("view") ?: 'accueil';
 
 		});
 
-		// Optionnel : Cacher les résultats si on clique en dehors
 		$(document).on('click', function (event) {
 			if (!$(event.target).closest('.search-container').length) {
 				resultsContainer.hide();
@@ -128,7 +127,7 @@ $current_view = valider("view") ?: 'accueil';
 
 			<div class="sidebar-bottom">
 				<a href="https://www.instagram.com/ecolecentralelille/" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-				<a href="https://www.linkedin.com/school/centralelille/posts/?feedView=all" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+				<a href="https://www.linkedin.com/school/centralelille/" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
 			</div>
 		</aside>
 

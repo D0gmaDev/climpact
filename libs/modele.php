@@ -250,12 +250,6 @@ function getEventById($id) {
     return null;
 }
 
-function newGetEvent($id) 
-{
-    return getEventById($id);
-}
-
-
 function getFutureEvents($limit = 10)
 {
 	return getEvents($limit, "WHERE e.end_time > NOW()");
@@ -291,6 +285,13 @@ function getEventInterested($id)
 	return parcoursRs(SQLSelect($SQL));
 }
 
+function isAuthorOfEvent($idUser, $idEvent)
+{
+	$SQL = "SELECT COUNT(*) FROM events WHERE id = " . intval($idEvent) . " AND author = " . intval($idUser);
+	$count = SQLGetChamp($SQL);
+	return $count > 0;
+}
+
 // ---- Associations ---- //
 
 function getAssociation($id)
@@ -323,6 +324,24 @@ function hasAssociation($idUser)
 	$count = SQLGetChamp($SQL);
 	return $count > 0;
 }
+
+// ---- Themes ---- //
+
+function getTheme($userId)
+{
+	$SQL = "SELECT theme FROM users WHERE id = " . intval($userId);
+	$theme = SQLGetChamp($SQL);
+	return $theme ? $theme : "default";
+}
+
+function setTheme($userId, $theme)
+{
+	$theme = htmlspecialchars($theme);
+	$SQL = "UPDATE users SET theme = '$theme' WHERE id = " . intval($userId);
+	return SQLUpdate($SQL);
+}
+
+// ---- Tags ---- //
 
 function getTagById($id)
 {
@@ -380,13 +399,6 @@ function getUserEventInvolvementIds($idUser, $type = "participate")
     return $eventIds;
 }
 
-function getInvolvementStatus($idUser, $idEvent)
-{
-	// Important: Assuming only one of 'interested' or 'participate' exists per user/event
-	$SQL = "SELECT type FROM involvements WHERE user = " . intval($idUser) . " AND event = " . intval($idEvent) . " AND (type = 'interested' OR type = 'participate')";
-	return SQLGetChamp($SQL); // This will return the 'type' string ('interested' or 'participate') or false if not found
-}
-
 function isUserInvolvedInEvent($idUser, $idEvent, $type = "participate")
 {
 	$SQL = "SELECT COUNT(*) FROM involvements WHERE user = '$idUser' AND event = '$idEvent' AND type = '$type'";
@@ -431,6 +443,8 @@ function getUserDistinctParticipationMonths($idUser)
 	$result = SQLGetChamp($SQL);
 	return $result ? intval($result) : 0;
 }
+
+// ---- Badges ---- //
 
 function getBadges()
 {

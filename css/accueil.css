@@ -12,7 +12,7 @@
     display: flex;
     align-items: center;
     gap: 15px;
-    flex-wrap: wrap; /* Permet aux éléments de passer à la ligne sur mobile */
+    flex-wrap: wrap;
 }
 
 #filterForm label {
@@ -20,7 +20,6 @@
     color: var(--text-color-light);
 }
 
-/* Amélioration du select multiple (peut nécessiter une librairie JS comme Select2 ou TomSelect pour un meilleur rendu) */
 #tagSelect {
     min-width: 250px;
     padding: 10px;
@@ -48,7 +47,7 @@
 #selectedTagsDisplay {
     font-style: italic;
     color: var(--text-color-light);
-    min-height: 20px; /* Évite le décalage de layout */
+    min-height: 20px;
 }
 
 
@@ -87,7 +86,7 @@
 }
 
 .event-author img {
-    width: 45px !important; /* Forcer la taille si besoin */
+    width: 45px !important;
     height: 45px !important;
     border-radius: 50%;
     margin-right: 12px;
@@ -155,14 +154,14 @@
     color: var(--text-color-dark);
 }
 
-.event .event-image { /* Ajout d'une classe pour mieux cibler */
+.event .event-image {
     max-width: 100%;
     height: auto;
     border-radius: 8px;
     margin-top: 15px;
 }
 
-.event .tags-list { /* Ajout d'une classe pour les tags */
+.event .tags-list {
     margin-bottom: 15px;
 }
 
@@ -178,7 +177,7 @@
 }
 
 /* --- Boutons d'action dans les cartes --- */
-.event .actions { /* Ajout d'une classe conteneur */
+.event .actions {
     margin-top: auto; /* Pousse les boutons en bas de la carte */
     padding-top: 15px;
     border-top: 1px solid var(--border-color);
@@ -252,7 +251,7 @@
 }
 
 
-/* --- Pop-up d'information au survol (Hover Info Box) --- */
+/* --- Pop-up d'hover --- */
 .hover-info-box {
     background: var(--text-color-dark) !important;
     color: white;

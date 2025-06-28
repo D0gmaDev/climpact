@@ -40,7 +40,7 @@ function SQLUpdate($sql)
 		die("<font color=\"red\">SQLUpdate/Delete: Erreur de connexion : " . $e->getMessage() . "</font>");
 	}
 
-	$dbh->exec("SET CHARACTER SET utf8");
+	$dbh->exec("SET NAMES utf8mb4");
 	$res = $dbh->query($sql);
 	if ($res === false) {
 		$e = $dbh->errorInfo(); 
@@ -77,7 +77,7 @@ function SQLInsert($sql)
 		die("<font color=\"red\">SQLInsert: Erreur de connexion : " . $e->getMessage() . "</font>");
 	}
 
-	$dbh->exec("SET CHARACTER SET utf8");
+	$dbh->exec("SET NAMES utf8mb4");
 	$res = $dbh->query($sql);
 	if ($res === false) {
 		$e = $dbh->errorInfo(); 
@@ -111,7 +111,7 @@ function SQLGetChamp($sql)
 		die("<font color=\"red\">SQLGetChamp: Erreur de connexion : " . $e->getMessage() . "</font>");
 	}
 
-	$dbh->exec("SET CHARACTER SET utf8");
+	$dbh->exec("SET NAMES utf8mb4");
 	$res = $dbh->query($sql);
 	if ($res === false) {
 		$e = $dbh->errorInfo(); 
@@ -151,7 +151,7 @@ function SQLSelect($sql)
 		die("<font color=\"red\">SQLSelect: Erreur de connexion : " . $e->getMessage() . "</font>");
 	}
 
-	$dbh->exec("SET CHARACTER SET utf8");
+	$dbh->exec("SET NAMES utf8mb4");
 	$res = $dbh->query($sql);
 	if ($res === false) {
 		$e = $dbh->errorInfo(); 
@@ -181,10 +181,5 @@ function parcoursRs($result)
 
 	return $tab;
 }
-
-
-
-
-
 
 ?>

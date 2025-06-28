@@ -11,13 +11,26 @@ include_once("libs/maLibForms.php"); // mkTable, mkSelect
 
 ?>
 
-<h1>Administration du site</h1>
+<link rel="stylesheet" type="text/css" href="css/users.css">
 
-<h2>Liste des utilisateurs </h2>
+<h1>Liste des utilisateurs</h1>
 
-<?php
+<div class="user-list">
+    <?php
+    $users = getUsers();
 
-$users = getUsers();
-mkTable($users, array("id", "username", "firstName", "lastName", "cursus"));
-
-?>
+    foreach ($users as $user) {
+        $qs = "index.php?view=user&username=" . urlencode($user['username']);
+        $fullName = htmlspecialchars($user['firstName'] . " " . $user['lastName']);
+        $badges = getUserBadges($user['id']);
+    ?>
+        <div class="user-card">
+            <a href="<?= $qs ?>" class="user-link">
+                <?= $fullName ?>
+                <?php foreach ($badges as $badge): ?>
+                    <span class="badge"><?= htmlspecialchars($badge['emoji']) ?></span>
+                <?php endforeach; ?>
+            </a>
+        </div>
+    <?php } ?>
+</div>
