@@ -13,14 +13,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Create and configure config.php
-        run: |
-          cp config.template.php config.php
-          sed -i 's/%%DB_PASSWORD%%/${{ secrets.DB_PASSWORD }}/g' config.php
-        shell: bash
-
       - name: Deploy to Rezoleo
-        uses: rezoleo/rezoleo-deploy-action@v1
+        uses: rezoleo/rezoleo-deploy-action@v2
         with:
           sftp-key: ${{ secrets.DEPLOY_KEY }}
           sftp-user: climpact23
